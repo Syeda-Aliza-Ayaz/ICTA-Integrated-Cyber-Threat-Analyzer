@@ -4823,6 +4823,7 @@ var _getGlobalGraphJSON = Module['_getGlobalGraphJSON'] = makeInvalidEarlyAccess
 var _getClusterGraphJSON = Module['_getClusterGraphJSON'] = makeInvalidEarlyAccess('_getClusterGraphJSON');
 var _getShortestPath = Module['_getShortestPath'] = makeInvalidEarlyAccess('_getShortestPath');
 var _getTopThreatsByType = Module['_getTopThreatsByType'] = makeInvalidEarlyAccess('_getTopThreatsByType');
+var _getTypeGraphJSON = Module['_getTypeGraphJSON'] = makeInvalidEarlyAccess('_getTypeGraphJSON');
 var _setOTXData = Module['_setOTXData'] = makeInvalidEarlyAccess('_setOTXData');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _strerror = makeInvalidEarlyAccess('_strerror');
@@ -4886,6 +4887,8 @@ function assignWasmExports(wasmExports) {
   _getShortestPath = Module['_getShortestPath'] = createExportWrapper('getShortestPath', 2);
   assert(typeof wasmExports['getTopThreatsByType'] != 'undefined', 'missing Wasm export: getTopThreatsByType');
   _getTopThreatsByType = Module['_getTopThreatsByType'] = createExportWrapper('getTopThreatsByType', 2);
+  assert(typeof wasmExports['getTypeGraphJSON'] != 'undefined', 'missing Wasm export: getTypeGraphJSON');
+  _getTypeGraphJSON = Module['_getTypeGraphJSON'] = createExportWrapper('getTypeGraphJSON', 1);
   assert(typeof wasmExports['setOTXData'] != 'undefined', 'missing Wasm export: setOTXData');
   _setOTXData = Module['_setOTXData'] = createExportWrapper('setOTXData', 1);
   assert(typeof wasmExports['fflush'] != 'undefined', 'missing Wasm export: fflush');

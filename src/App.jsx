@@ -1,7 +1,7 @@
 // src/App.jsx
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Search, Download, RefreshCw, GitBranch } from 'lucide-react';
+import { Search, Download, RefreshCw, GitBranch, ChevronDown } from 'lucide-react';
 import { loadWASM } from './wasm';
 import ThreatGraph from './components/ThreatGraph';
 import { Toaster, toast } from 'react-hot-toast';
@@ -25,10 +25,21 @@ export default function CyberDashboard() {
   const [pathSrc, setPathSrc] = useState('');
   const [pathDst, setPathDst] = useState('');
   const [prefixMatches, setPrefixMatches] = useState([]);
-  const [isEngineReady, setIsEngineReady] = useState(false); // FIXED
+  const [isEngineReady, setIsEngineReady] = useState(false);
   const prefixRef = useRef(null);
   const prefixInputRef = useRef(null);
-  const [selectedIndex, setSelectedIndex] = useState(-1); // ADD THIS
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+  const [selectedType, setSelectedType] = useState('All Types');
+  const [selectedTypeIndex, setSelectedTypeIndex] = useState(0);
+  const typeFilterRef = useRef(null);
+  const [isTypeLoading, setIsTypeLoading] = useState(false);
+  const [availableTypes, setAvailableTypes] = useState([]);
+
+  useEffect(() => {
+    console.log('selectedType updated:', selectedType);
+    console.log('availableTypes updated:', availableTypes);
+  }, [selectedType, availableTypes]);
 
   // === LOAD WASM + MOCK DATA ===
   useEffect(() => {
@@ -40,6 +51,13 @@ export default function CyberDashboard() {
         ]);
         if (!mockRes.ok) throw new Error('mock_data.json not found');
         const mockData = await mockRes.json();
+
+        // NEW: Extract unique types from mockData and capitalize "IP" fully, others as title case
+        const uniqueTypes = [...new Set(mockData.map(item => {
+          const type = item.type.toLowerCase();
+          return type === 'ip' ? 'IP' : type.charAt(0).toUpperCase() + type.slice(1).toLowerCase();
+        }))].sort();
+        setAvailableTypes(uniqueTypes);
 
         setModule(mod);
 
@@ -54,10 +72,16 @@ export default function CyberDashboard() {
             const json = getGlobal();
             if (json && json.includes('nodes') && json.length > 50) {
               const graphObj = JSON.parse(json);
+              // Assign colors during initial load
+              graphObj.nodes = graphObj.nodes.map(node => ({
+                ...node,
+                type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+                color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+              }));
               setGraphData(graphObj);
               setTopThreats(JSON.parse(mod.cwrap('getTopKThreats', 'string', ['number'])(5)));
               setLoading(false);
-              setIsEngineReady(true); // ENGINE READY
+              setIsEngineReady(true);
               toast.success(`Loaded ${graphObj.nodes.length} IoCs`);
               clearInterval(checkReady);
             }
@@ -74,16 +98,329 @@ export default function CyberDashboard() {
     initApp();
   }, []);
 
-  // === CLOSE PREFIX DROPDOWN ON OUTSIDE CLICK ===
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (prefixRef.current && !prefixRef.current.contains(e.target)) {
         setPrefixMatches([]);
       }
+      if (typeFilterRef.current && !typeFilterRef.current.contains(e.target)) {
+        console.log('Clicked outside, closing type dropdown');
+        setShowTypeDropdown(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const handleTypeKeyDown = (e) => {
+    if (isTypeLoading) return;
+
+    const types = ['', ...availableTypes];
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (showTypeDropdown) {
+        const type = types[selectedTypeIndex];
+        console.log('Enter selected type:', type);
+        setSelectedType(type || 'All Types');
+        setShowTypeDropdown(false);
+        if (type) handleTypeChange(type);
+        else resetToGlobal();
+      } else {
+        setShowTypeDropdown(true);
+      }
+    } else if (showTypeDropdown) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedTypeIndex((prev) => (prev + 1) % types.length);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedTypeIndex((prev) => (prev - 1 + types.length) % types.length);
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        setShowTypeDropdown(false);
+        setSelectedTypeIndex(0);
+      }
+    }
+  };
+
+  // const handleTypeChange = (type) => {
+  //   if (!type || !module || !isEngineReady) {
+  //     toast.error('Engine not ready or invalid type');
+  //     setSelectedType(type || 'All Types');
+  //     return;
+  //   }
+
+  //   setIsTypeLoading(true);
+  //   try {
+  //     console.log('handleTypeChange called with type:', type);
+  //     let graph = null;
+  //     let topThreats = [];
+
+  //     const hasGetTypeGraphJSON = module['_getTypeGraphJSON'] || (module.cwrap && module.cwrap('getTypeGraphJSON', 'string', ['string'], { async: true }));
+  //     const hasGetTopThreatsByType = module['_getTopThreatsByType'] || (module.cwrap && module.cwrap('getTopThreatsByType', 'string', ['string', 'number'], { async: true }));
+
+  //     if (hasGetTypeGraphJSON && hasGetTopThreatsByType) {
+  //       const getTypeGraphJSON = module.cwrap('getTypeGraphJSON', 'string', ['string']);
+  //       const getTopThreatsByType = module.cwrap('getTopThreatsByType', 'string', ['string', 'number']);
+
+  //       const graphJSON = getTypeGraphJSON(type);
+  //       console.log('graphJSON:', graphJSON);
+  //       if (!graphJSON || graphJSON === '{}') throw new Error('No graph data returned');
+  //       graph = JSON.parse(graphJSON);
+  //       // Assign colors to nodes
+  //       graph.nodes = graph.nodes.map(node => ({
+  //         ...node,
+  //         type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+  //         color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+  //       }));
+
+  //       const topJSON = getTopThreatsByType(type, 5);
+  //       console.log('topJSON:', topJSON);
+  //       if (topJSON && topJSON !== '[]') {
+  //         topThreats = JSON.parse(topJSON).map(t => ({
+  //           ...t,
+  //           type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+  //         }));
+  //       }
+  //     } else {
+  //       console.warn(`WASM function${!hasGetTypeGraphJSON ? ' getTypeGraphJSON' : ''}${!hasGetTopThreatsByType ? ' getTopThreatsByType' : ''} missing, using fallback`);
+  //       const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
+  //       const globalGraph = JSON.parse(getGlobal());
+  //       graph = {
+  //         nodes: globalGraph.nodes
+  //           .filter((n) => n.type.toLowerCase() === type.toLowerCase())
+  //           .map((n) => ({
+  //             ...n,
+  //             type: n.type.toLowerCase() === 'ip' ? 'IP' : n.type.charAt(0).toUpperCase() + n.type.slice(1).toLowerCase(),
+  //             color: n.type.toLowerCase() === 'ip' ? '#06b6d4' : n.type.toLowerCase() === 'domain' ? '#8b5cf6' : n.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+  //           })),
+  //         edges: globalGraph.edges.filter((e) =>
+  //           globalGraph.nodes.some((n) => n.id === e.source && n.type.toLowerCase() === type.toLowerCase()) &&
+  //           globalGraph.nodes.some((n) => n.id === e.target && n.type.toLowerCase() === type.toLowerCase())
+  //         ),
+  //       };
+  //       topThreats = graph.nodes
+  //         .sort((a, b) => (b.score || 0) - (a.score || 0))
+  //         .slice(0, 5)
+  //         .map((n) => ({ ioc: n.id, type: n.type, score: n.score || 0 }));
+  //     }
+
+  //     if (!graph.nodes.length) {
+  //       throw new Error(`No ${type} nodes found`);
+  //     }
+
+  //     // NEW: Log node types and colors for debugging
+  //     console.log('Graph nodes types and colors:', graph.nodes.map(n => ({ id: n.id, type: n.type, color: n.color })));
+
+  //     setGraphMode('type');
+  //     setGraphData(graph);
+  //     setTopThreats(topThreats);
+  //     setSelectedNode({
+  //       id: type.toUpperCase(),
+  //       type,
+  //       threat: `${type} Overview`,
+  //       score: Math.round(
+  //         graph.nodes.reduce((a, b) => a + (b.score || 0), 0) / (graph.nodes.length || 1)
+  //       ),
+  //       relatedIoCs: graph.nodes.map((n) => n.id).slice(0, 5),
+  //     });
+
+  //     toast.success(`${type} threats visualized successfully!`);
+  //   } catch (error) {
+  //     console.error('Type filter error:', error);
+  //     toast.error(`Failed to load ${type} graph, showing filtered data`);
+  //     const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
+  //     const globalGraph = JSON.parse(getGlobal());
+  //     graph = {
+  //       nodes: globalGraph.nodes
+  //         .filter((n) => n.type.toLowerCase() === type.toLowerCase())
+  //         .map((n) => ({
+  //           ...n,
+  //           type: n.type.toLowerCase() === 'ip' ? 'IP' : n.type.charAt(0).toUpperCase() + n.type.slice(1).toLowerCase(),
+  //           color: n.type.toLowerCase() === 'ip' ? '#06b6d4' : n.type.toLowerCase() === 'domain' ? '#8b5cf6' : n.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+  //         })),
+  //       edges: globalGraph.edges.filter((e) =>
+  //         globalGraph.nodes.some((n) => n.id === e.source && n.type.toLowerCase() === type.toLowerCase()) &&
+  //         globalGraph.nodes.some((n) => n.id === e.target && n.type.toLowerCase() === type.toLowerCase())
+  //       ),
+  //     };
+  //     topThreats = graph.nodes
+  //       .sort((a, b) => (b.score || 0) - (a.score || 0))
+  //       .slice(0, 5)
+  //       .map((n) => ({ ioc: n.id, type: n.type, score: n.score || 0 }));
+
+  //     // NEW: Log node types and colors for debugging
+  //     console.log('Fallback graph nodes types and colors:', graph.nodes.map(n => ({ id: n.id, type: n.type, color: n.color })));
+
+  //     setGraphMode('type');
+  //     setGraphData(graph);
+  //     setTopThreats(topThreats);
+  //     setSelectedNode({
+  //       id: type.toUpperCase(),
+  //       type,
+  //       threat: `${type} Overview`,
+  //       score: Math.round(
+  //         graph.nodes.reduce((a, b) => a + (b.score || 0), 0) / (graph.nodes.length || 1)
+  //       ),
+  //       relatedIoCs: graph.nodes.map((n) => n.id).slice(0, 5),
+  //     });
+  //   } finally {
+  //     setIsTypeLoading(false);
+  //   }
+  // };
+
+  // Inside src/App.jsx, update handleTypeChange
+  const handleTypeChange = (type) => {
+    if (!type || !module || !isEngineReady) {
+      toast.error('Engine not ready or invalid type');
+      setSelectedType(type || 'All Types');
+      return;
+    }
+
+    setIsTypeLoading(true);
+    try {
+      console.log('handleTypeChange called with type:', type);
+      let graph = null;
+      let topThreats = [];
+
+      const hasGetTypeGraphJSON = module['_getTypeGraphJSON'] || (module.cwrap && module.cwrap('getTypeGraphJSON', 'string', ['string'], { async: true }));
+      const hasGetTopThreatsByType = module['_getTopThreatsByType'] || (module.cwrap && module.cwrap('getTopThreatsByType', 'string', ['string', 'number'], { async: true }));
+
+      if (hasGetTypeGraphJSON && hasGetTopThreatsByType) {
+        const getTypeGraphJSON = module.cwrap('getTypeGraphJSON', 'string', ['string']);
+        const getTopThreatsByType = module.cwrap('getTopThreatsByType', 'string', ['string', 'number']);
+
+        const graphJSON = getTypeGraphJSON(type.toLowerCase()); // Normalize to lowercase
+        console.log('graphJSON:', graphJSON);
+        if (!graphJSON || graphJSON === '{}') throw new Error('No graph data returned');
+        graph = JSON.parse(graphJSON);
+        // Assign colors to nodes
+        graph.nodes = graph.nodes.map(node => ({
+          ...node,
+          type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+          color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+        }));
+
+        const topJSON = getTopThreatsByType(type.toLowerCase(), 5);
+        console.log('topJSON:', topJSON);
+        if (topJSON && topJSON !== '[]') {
+          topThreats = JSON.parse(topJSON).map(t => ({
+            ...t,
+            type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+          }));
+        }
+      } else {
+        console.warn(`WASM function${!hasGetTypeGraphJSON ? ' getTypeGraphJSON' : ''}${!hasGetTopThreatsByType ? ' getTopThreatsByType' : ''} missing, using fallback`);
+        const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
+        const globalGraph = JSON.parse(getGlobal());
+        graph = {
+          nodes: globalGraph.nodes
+            .filter((n) => n.type.toLowerCase() === type.toLowerCase())
+            .map((n) => ({
+              ...n,
+              type: n.type.toLowerCase() === 'ip' ? 'IP' : n.type.charAt(0).toUpperCase() + n.type.slice(1).toLowerCase(),
+              color: n.type.toLowerCase() === 'ip' ? '#06b6d4' : n.type.toLowerCase() === 'domain' ? '#8b5cf6' : n.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+            })),
+          links: globalGraph.links.filter((l) =>
+            globalGraph.nodes.some((n) => n.id === l.source && n.type.toLowerCase() === type.toLowerCase()) &&
+            globalGraph.nodes.some((n) => n.id === l.target && n.type.toLowerCase() === type.toLowerCase())
+          ),
+        };
+        topThreats = graph.nodes
+          .sort((a, b) => (b.score || 0) - (a.score || 0))
+          .slice(0, 5)
+          .map((n) => ({ ioc: n.id, type: n.type, score: n.score || 0 }));
+      }
+
+      if (!graph.nodes.length) {
+        throw new Error(`No ${type} nodes found`);
+      }
+
+      console.log('Graph nodes types and colors:', graph.nodes.map(n => ({ id: n.id, type: n.type, color: n.color })));
+
+      setGraphMode('type');
+      setGraphData(graph);
+      setTopThreats(topThreats);
+      setSelectedNode({
+        id: type.toUpperCase(),
+        type,
+        threat: `${type} Overview`,
+        score: Math.round(
+          graph.nodes.reduce((a, b) => a + (b.score || 0), 0) / (graph.nodes.length || 1)
+        ),
+        relatedIoCs: graph.nodes.map((n) => n.id).slice(0, 5),
+      });
+
+      toast.success(`${type} threats visualized successfully!`);
+    } catch (error) {
+      console.error('Type filter error:', error);
+      toast.error(`Failed to load ${type} graph, showing filtered data`);
+      const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
+      const globalGraph = JSON.parse(getGlobal());
+      graph = {
+        nodes: globalGraph.nodes
+          .filter((n) => n.type.toLowerCase() === type.toLowerCase())
+          .map((n) => ({
+            ...n,
+            type: n.type.toLowerCase() === 'ip' ? 'IP' : n.type.charAt(0).toUpperCase() + n.type.slice(1).toLowerCase(),
+            color: n.type.toLowerCase() === 'ip' ? '#06b6d4' : n.type.toLowerCase() === 'domain' ? '#8b5cf6' : n.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+          })),
+        links: globalGraph.links.filter((l) =>
+          globalGraph.nodes.some((n) => n.id === l.source && n.type.toLowerCase() === type.toLowerCase()) &&
+          globalGraph.nodes.some((n) => n.id === l.target && n.type.toLowerCase() === type.toLowerCase())
+        ),
+      };
+      topThreats = graph.nodes
+        .sort((a, b) => (b.score || 0) - (a.score || 0))
+        .slice(0, 5)
+        .map((n) => ({ ioc: n.id, type: n.type, score: n.score || 0 }));
+
+      console.log('Fallback graph nodes types and colors:', graph.nodes.map(n => ({ id: n.id, type: n.type, color: n.color })));
+
+      setGraphMode('type');
+      setGraphData(graph);
+      setTopThreats(topThreats);
+      setSelectedNode({
+        id: type.toUpperCase(),
+        type,
+        threat: `${type} Overview`,
+        score: Math.round(
+          graph.nodes.reduce((a, b) => a + (b.score || 0), 0) / (graph.nodes.length || 1)
+        ),
+        relatedIoCs: graph.nodes.map((n) => n.id).slice(0, 5),
+      });
+    } finally {
+      setIsTypeLoading(false);
+    }
+  };
+
+  const resetToGlobal = () => {
+    if (!isEngineReady) return;
+    setSearchValue('');
+    setIoc(null);
+    setGraphMode('global');
+    setSelectedNode(null);
+    setPathHighlight([]);
+    setPrefixMatches([]);
+    setSelectedType('All Types');
+    setSelectedTypeIndex(0);
+    const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
+    const globalGraph = JSON.parse(getGlobal());
+    // Ensure colors are assigned consistently
+    globalGraph.nodes = globalGraph.nodes.map(node => ({
+      ...node,
+      type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+      color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+    }));
+    // NEW: Log node types and colors for debugging
+    console.log('Global graph nodes types and colors:', globalGraph.nodes.map(n => ({ id: n.id, type: n.type, color: n.color })));
+    setGraphData(globalGraph);
+    setGraphKey(prev => prev + 1);
+    setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)).map(t => ({
+      ...t,
+      type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+    })));
+  };
 
   // === PREFIX SEARCH HANDLER ===
   const handlePrefixChange = (e) => {
@@ -103,8 +440,34 @@ export default function CyberDashboard() {
   };
 
   // === PREFIX KEYDOWN ===
+  // const handlePrefixKeyDown = (e) => {
+  //   if (!prefixMatches.length) return;
+
+  //   if (e.key === 'ArrowDown') {
+  //     e.preventDefault();
+  //     setSelectedIndex(prev => (prev + 1) % prefixMatches.length);
+  //   } else if (e.key === 'ArrowUp') {
+  //     e.preventDefault();
+  //     setSelectedIndex(prev => (prev - 1 + prefixMatches.length) % prefixMatches.length);
+  //   } else if (e.key === 'Enter') {
+  //     e.preventDefault();
+  //     const selected = prefixMatches[selectedIndex];
+  //     const searchTerm = selected || e.target.value.trim();
+  //     if (searchTerm) {
+  //       if (prefixInputRef.current) prefixInputRef.current.value = searchTerm;
+  //       setSearchValue(searchTerm);
+  //       handleSearch(searchTerm);
+  //       setPrefixMatches([]);
+  //       setSelectedIndex(-1);
+  //     }
+  //   } else if (e.key === 'Escape') {
+  //     setPrefixMatches([]);
+  //     setSelectedIndex(-1);
+  //   }
+  // };
+
   const handlePrefixKeyDown = (e) => {
-    if (!prefixMatches.length) return;
+    if (!prefixMatches.length && e.key !== 'Enter') return; // Allow Enter even without matches
 
     if (e.key === 'ArrowDown') {
       e.preventDefault();
@@ -117,9 +480,18 @@ export default function CyberDashboard() {
       const selected = prefixMatches[selectedIndex];
       const searchTerm = selected || e.target.value.trim();
       if (searchTerm) {
-        if (prefixInputRef.current) prefixInputRef.current.value = searchTerm;
+        if (prefixInputRef.current) {
+          prefixInputRef.current.value = searchTerm;
+          prefixInputRef.current.focus(); // Ensure focus remains
+        }
         setSearchValue(searchTerm);
-        handleSearch(searchTerm);
+        try {
+          handleSearch(searchTerm);
+        } catch (error) {
+          console.error('Search error:', error);
+          toast.error(error.message); // Show error toast
+          goToNotFound();
+        }
         setPrefixMatches([]);
         setSelectedIndex(-1);
       }
@@ -128,6 +500,7 @@ export default function CyberDashboard() {
       setSelectedIndex(-1);
     }
   };
+
 
   const handleSearch = (iocValue = searchValue) => {
     const value = (iocValue || '').toString().trim();
@@ -141,6 +514,8 @@ export default function CyberDashboard() {
       let data;
       try {
         data = JSON.parse(result);
+        // Capitalize the type in ioc data (IP fully, others title case)
+        data.type = data.type.toLowerCase() === 'ip' ? 'IP' : data.type.charAt(0).toUpperCase() + data.type.slice(1).toLowerCase();
       } catch (e) {
         console.error("JSON parse error:", e);
         goToNotFound();
@@ -160,6 +535,12 @@ export default function CyberDashboard() {
         const clusterJSON = getCluster(value);
         const clusterDataRaw = JSON.parse(clusterJSON);
         const clusterData = JSON.parse(JSON.stringify(clusterDataRaw)); // Deep clone
+        // Assign colors to cluster nodes
+        clusterData.nodes = clusterData.nodes.map(node => ({
+          ...node,
+          type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+          color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+        }));
         setGraphData(clusterData);
         setGraphMode('cluster');
         setGraphKey(prev => prev + 1); // This triggers full remount
@@ -172,7 +553,10 @@ export default function CyberDashboard() {
         if (getTopByType) {
           try {
             const topJSON = getTopByType(data.type, 5);
-            topList = JSON.parse(topJSON);
+            topList = JSON.parse(topJSON).map(t => ({
+              ...t,
+              type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+            }));
           } catch (e) { }
         }
         if (topList.length === 0) {
@@ -192,11 +576,40 @@ export default function CyberDashboard() {
       }
     }
 
-    // === CASE 2: NOT FOUND → RESET EVERYTHING ===
-    goToNotFound();
+    // === CASE 2: NOT FOUND → EXPLICIT ERROR ===
+    throw new Error(`IoC "${value}" not found in the database`);
   };
-
   // === HELPER: RESET TO NOT FOUND STATE ===
+  // const goToNotFound = () => {
+  //   setIoc(null);
+  //   setGraphMode('global');
+  //   setSelectedNode(null);
+  //   setPathHighlight([]);
+  //   setPrefixMatches([]);
+
+  //   // RESTORE GLOBAL GRAPH
+  //   const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
+  //   const globalData = JSON.parse(getGlobal());
+  //   // Assign colors to global nodes
+  //   globalData.nodes = globalData.nodes.map(node => ({
+  //     ...node,
+  //     type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+  //     color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+  //   }));
+  //   setGraphData(globalData);
+  //   setGraphKey(prev => prev + 1);
+
+  //   // RESTORE GLOBAL TOP THREATS
+  //   setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)).map(t => ({
+  //     ...t,
+  //     type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+  //   })));
+
+  //   // FORCE REMOUNT
+  //   setGraphKey(prev => prev + 1);
+
+  //   toast.error(`IoC "${searchValue}" not found`);
+  // };
   const goToNotFound = () => {
     setIoc(null);
     setGraphMode('global');
@@ -207,37 +620,30 @@ export default function CyberDashboard() {
     // RESTORE GLOBAL GRAPH
     const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
     const globalData = JSON.parse(getGlobal());
-    setGraphData(JSON.parse(getGlobal()));
+    // Assign colors to global nodes
+    globalData.nodes = globalData.nodes.map(node => ({
+      ...node,
+      type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+      color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+    }));
+    setGraphData(globalData);
     setGraphKey(prev => prev + 1);
 
     // RESTORE GLOBAL TOP THREATS
-    setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)));
+    setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)).map(t => ({
+      ...t,
+      type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+    })));
 
     // FORCE REMOUNT
     setGraphKey(prev => prev + 1);
 
-    toast.error(`IoC "${searchValue}" not found`);
+    // Toast will be triggered by the catch block in handleSearch
   };
-
-
   const handleNodeClick = (node) => {
     setSearchValue(node.id);
     setSelectedNode(node);
     handleSearch(node.id);
-  };
-
-  const resetToGlobal = () => {
-    if (!isEngineReady) return;
-    setSearchValue('');
-    setIoc(null);
-    setGraphMode('global');
-    setSelectedNode(null);
-    setPathHighlight([]);
-    setPrefixMatches([]);
-    const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
-    setGraphData(JSON.parse(getGlobal()));
-    setGraphKey(prev => prev + 1);
-    setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)));
   };
 
   const findPath = (fromNode) => {
@@ -262,8 +668,18 @@ export default function CyberDashboard() {
     setPrefixMatches([]);
     if (isEngineReady) {
       const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
-      setGraphData(JSON.parse(getGlobal()));
-      setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)));
+      const globalData = JSON.parse(getGlobal());
+      // Assign colors to global nodes
+      globalData.nodes = globalData.nodes.map(node => ({
+        ...node,
+        type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+        color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+      }));
+      setGraphData(globalData);
+      setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)).map(t => ({
+        ...t,
+        type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+      })));
     }
     toast.success('Cache cleared!');
   };
@@ -294,7 +710,10 @@ export default function CyberDashboard() {
       timestamp: new Date().toLocaleString(),
       searchQuery: searchValue || "Global View",
       foundIoC: ioc,
-      topThreats: topThreats,
+      topThreats: topThreats.map(t => ({
+        ...t,
+        type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+      })),
       graphMode: graphMode,
       totalNodes: graphData?.nodes?.length || 0,
       path: pathHighlight
@@ -340,52 +759,6 @@ export default function CyberDashboard() {
     }
   };
 
-  const handleTypeSearch = (type) => {
-    if (!isEngineReady) return;
-
-    const normalized = type.toLowerCase();
-    const validTypes = ['ip', 'domain', 'hash', 'campaign'];
-    if (!validTypes.includes(normalized)) {
-      toast.error('Invalid type. Use: IP, Domain, Hash, Campaign');
-      return;
-    }
-
-    const getTop = module.cwrap('getTopThreatsByType', 'string', ['string', 'number']);
-    const topJSON = getTop(normalized === 'campaign' ? 'threat' : normalized, 10); // top 10
-    const topThreats = JSON.parse(topJSON);
-
-    // Switch to "Type View"
-    setGraphMode('type');
-    setSelectedNode({ id: `Top ${normalized.toUpperCase()} Threats`, type: normalized });
-    setTopThreats(topThreats);
-    setIoc(null);
-
-    // Generate type-specific graph
-    const nodes = topThreats.map(t => t.ioc);
-    const graph = { nodes: [], links: [] };
-    nodes.forEach(ioc => {
-      const details = JSON.parse(module.cwrap('searchIoC', 'string', ['string'])(ioc));
-      graph.nodes.push({
-        id: ioc,
-        label: ioc,
-        type: details.type || normalized,
-        score: details.score || 0
-      });
-      // Add edges from relatedIoCs
-      if (details.relatedIoCs) {
-        details.relatedIoCs.forEach(rel => {
-          if (nodes.includes(rel)) {
-            graph.links.push({ source: ioc, target: rel });
-          }
-        });
-      }
-    });
-
-    setGraphData(graph);
-    setGraphKey(prev => prev + 1);
-    toast.success(`Showing top ${normalized.toUpperCase()} threats`);
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0e0f11] flex items-center justify-center">
@@ -428,21 +801,81 @@ export default function CyberDashboard() {
                 Global View
               </motion.button>
 
-              {/* MAIN SEARCH BAR */}
-              <div className="relative">
-                <input
-                  type="text"
-                  placeholder="Search IP, Domain, Hash, or Campaign..."
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                  className="w-80 bg-white/10 text-gray-100 px-4 py-2.5 rounded-lg pr-11 border border-cyan-500/20 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-[#0e0f11]/50 transition-all placeholder-gray-500 text-base"
-                />
-                <Search
-                  onClick={() => handleSearch()}
-                  className="absolute right-3 top-3 text-cyan-400 hover:text-pink-400 cursor-pointer transition-colors"
-                  size={20}
-                />
+              {/* Filter by Type Dropdown */}
+              <div className="relative" ref={typeFilterRef}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileFocus={{ scale: 1.02, borderColor: 'rgba(236, 72, 153, 0.8)' }}
+                  onClick={() => {
+                    console.log('Dropdown clicked, toggling showTypeDropdown');
+                    if (!isTypeLoading) setShowTypeDropdown(!showTypeDropdown);
+                  }}
+                  onKeyDown={handleTypeKeyDown}
+                  tabIndex={0}
+                  role="combobox"
+                  aria-expanded={showTypeDropdown}
+                  aria-label="Filter by threat type"
+                  className={`w-48 bg-white/10 text-cyan-300 px-4 py-2.5 rounded-lg border border-pink-500/20 hover:border-pink-500/50 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all cursor-pointer flex items-center justify-between ${isTypeLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                  <span className="text-sm font-medium">
+                    {isTypeLoading ? 'Loading...' : selectedType}
+                  </span>
+                  <ChevronDown
+                    className="text-pink-400 hover:text-pink-300 transition-colors opacity-70 hover:opacity-100"
+                    size={20}
+                  />
+                </motion.div>
+
+                {showTypeDropdown && createPortal(
+                  <motion.ul
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="absolute mt-1 w-full rounded-lg border border-pink-500/30 bg-[#0f0f11]/95 backdrop-blur-md shadow-2xl text-gray-200 z-[1000] pointer-events-auto"
+                    style={{
+                      top: typeFilterRef.current?.getBoundingClientRect()?.bottom + window.scrollY,
+                      left: typeFilterRef.current?.getBoundingClientRect()?.left,
+                      width: typeFilterRef.current?.offsetWidth || 192,
+                    }}
+                  >
+                    {['', ...availableTypes].map((type, i) => (
+                      <li
+                        key={i}
+                        className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedTypeIndex ? 'bg-pink-500/30 text-pink-300' : 'hover:bg-pink-500/20'}`}
+                        onMouseEnter={() => setSelectedTypeIndex(i)}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Mouse clicked type:', type || 'All Types');
+                          setSelectedType(type || 'All Types');
+                          setSelectedTypeIndex(i);
+                          setShowTypeDropdown(false);
+                          console.log('Calling handleTypeChange/resetToGlobal with type:', type);
+                          if (type) handleTypeChange(type);
+                          else resetToGlobal();
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            console.log('Keydown selected type:', type || 'All Types');
+                            setSelectedType(type || 'All Types');
+                            setShowTypeDropdown(false);
+                            setSelectedTypeIndex(i);
+                            if (type) handleTypeChange(type);
+                            else resetToGlobal();
+                          }
+                        }}
+                        tabIndex={0}
+                        role="option"
+                        aria-selected={i === selectedTypeIndex}
+                      >
+                        <span className="font-mono">{type || 'All Types'}</span>
+                        <span className="text-xs text-pink-400">Select</span>
+                      </li>
+                    ))}
+                  </motion.ul>,
+                  document.body
+                )}
               </div>
 
               {/* PREFIX SEARCH BAR */}
@@ -452,31 +885,7 @@ export default function CyberDashboard() {
                   type="text"
                   placeholder="Prefix: APT29, DDoS, 192..."
                   onChange={handlePrefixChange}
-                  onKeyDown={(e) => {
-                    if (!prefixMatches.length) return;
-
-                    if (e.key === 'ArrowDown') {
-                      e.preventDefault();
-                      setSelectedIndex(prev => (prev + 1) % prefixMatches.length);
-                    } else if (e.key === 'ArrowUp') {
-                      e.preventDefault();
-                      setSelectedIndex(prev => (prev - 1 + prefixMatches.length) % prefixMatches.length);
-                    } else if (e.key === 'Enter') {
-                      e.preventDefault();
-                      const selected = prefixMatches[selectedIndex];
-                      const searchTerm = selected || e.target.value.trim();
-                      if (searchTerm) {
-                        if (prefixInputRef.current) prefixInputRef.current.value = searchTerm;
-                        setSearchValue(searchTerm);
-                        handleSearch(searchTerm);
-                        setPrefixMatches([]);
-                        setSelectedIndex(-1);
-                      }
-                    } else if (e.key === 'Escape') {
-                      setPrefixMatches([]);
-                      setSelectedIndex(-1);
-                    }
-                  }}
+                  onKeyDown={handlePrefixKeyDown}
                   className="w-80 bg-white/10 text-gray-100 px-4 py-2.5 rounded-lg pr-11 border border-purple-500/20 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-[#0e0f11]/50 transition-all placeholder-gray-500 text-base"
                 />
 
@@ -537,20 +946,59 @@ export default function CyberDashboard() {
         {/* MAIN CONTENT */}
         <div className="flex-1 flex gap-6 p-6">
           {/* LEFT CARD */}
-          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="w-64 bg-[#141518]/70 rounded-2xl p-6 backdrop-blur-md border border-white/10 space-y-6 shadow-lg shadow-black/50">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="w-64 bg-[#141518]/90 rounded-2xl p-6 backdrop-blur-lg border border-cyan-500/20 shadow-lg shadow-cyan-500/10 space-y-6"
+          >
             <div className="text-center">
-              <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-pink-500 rounded-full mx-auto mb-3 shadow-md shadow-cyan-500/30"></div>
-              <h3 className="text-white font-bold text-lg">Cyber Threat Team</h3>
-              <p className="text-cyan-400 text-sm">Lead: Syeda Aliza Ayaz</p>
+              {/* Team Collage Image */}
+              <motion.div
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                whileTap={{ scale: 0.95 }}
+                className="w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden border-4 border-cyan-400/50 shadow-xl shadow-pink-500/20"
+              >
+                <img
+                  src="team-collage.jpg"
+                  alt="Cyber Threat Team Collage"
+                  className="w-full h-full object-cover"
+                />
+              </motion.div>
+              <h3 className="text-white font-bold text-2xl tracking-tight">Future Cyber Defenders</h3>
+              <p className="text-cyan-300 text-sm font-medium">Building the Ultimate Threat Analyzer!</p>
             </div>
-            <div className="space-y-2 text-sm text-gray-400">
-              <p className="flex items-center gap-2 hover:text-cyan-400 transition-colors">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span> Arooj Zahra
-              </p>
-              <p className="flex items-center gap-2 hover:text-pink-400 transition-colors">
-                <span className="w-2 h-2 bg-yellow-500 rounded-full"></span> Syeda Amna Zahid
-              </p>
+            <div className="space-y-3 text-sm text-gray-300">
+              <div className="flex items-center gap-3 hover:bg-cyan-500/10 p-2 rounded-lg transition-all">
+                <span className="w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"></span>
+                <div>
+                  <p className="font-semibold text-white">Syeda Aliza Ayaz</p>
+                  <p className="text-cyan-400 text-xs">Code Wizard & Team Lead</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 hover:bg-pink-500/10 p-2 rounded-lg transition-all">
+                <span className="w-3 h-3 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full"></span>
+                <div>
+                  <p className="font-semibold text-white">Arooj Zahra</p>
+                  <p className="text-pink-400 text-xs">UI/UX Enthusiast</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 hover:bg-yellow-500/10 p-2 rounded-lg transition-all">
+                <span className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full"></span>
+                <div>
+                  <p className="font-semibold text-white">Syeda Amna Zahid</p>
+                  <p className="text-yellow-400 text-xs">Tech Explorer</p>
+                </div>
+              </div>
             </div>
+            {/* Contact Button */}
+            <motion.a
+              href="https://github.com/Syeda-Aliza-Ayaz/ICTA-Integrated-Cyber-Threat-Analyzer"
+              target="_blank"
+              whileHover={{ scale: 1.05 }}
+              className="block text-center px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-pink-500/20 rounded-lg border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/30 text-sm font-medium"
+            >
+              Check Out Our Project!
+            </motion.a>
           </motion.div>
 
           {/* CENTER GRAPH */}
@@ -583,16 +1031,16 @@ export default function CyberDashboard() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-white font-bold text-lg">IoC Type: {ioc.type}</h3>
+                    <h3 className="text-white font-bold text-lg">IoC Type: {ioc.type.toLowerCase() === 'ip' ? 'IP' : ioc.type.charAt(0).toUpperCase() + ioc.type.slice(1).toLowerCase()}</h3>
                   </div>
                 </div>
                 <div className="space-y-1 text-sm text-gray-400">
                   <p className="text-cyan-400 font-semibold">IoC: {ioc.ioc}</p>
-                  {console.log("IOC DETAILS →", ioc)}
                   <p>Campaign: "{ioc.threat}"</p>
                   <p>Related IoCs: {ioc.relatedIoCs.slice(0, 3).join(', ')}{ioc.relatedIoCs.length > 3 ? '...' : ''}</p>
                   <p>Confidence: {ioc.confidence_level}%</p>
                   <p>Cluster Size: {ioc.relatedIoCs.length + 1} threats</p>
+                  <p>Total {selectedNode.type.toLowerCase() === 'ip' ? 'IP' : selectedNode.type.charAt(0).toUpperCase() + selectedNode.type.slice(1).toLowerCase()} threats: {graphData.nodes?.length || 0}</p>
                 </div>
               </motion.div>
             ) : searchValue && !loading && (
@@ -628,28 +1076,32 @@ export default function CyberDashboard() {
           <div className="max-w-7xl mx-auto">
             <motion.h2 initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-white font-bold text-xl mb-6 flex items-center gap-2">
               <span className="w-2 h-8 bg-gradient-to-b from-cyan-400 to-pink-500 rounded-full"></span>
-              Top 5 {graphMode === 'global' ? 'Global' : ioc?.type + ' Type'} Threats
+              Top 5 {graphMode === 'global' ? 'Global' : selectedType !== 'Filter by Type' ? `${selectedType} Type` : 'Global'} Threats
             </motion.h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {topThreats.map((t, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-[#1a1b1e]/80 to-[#141518]/80 p-5 rounded-2xl border border-cyan-500/20 backdrop-blur-sm shadow-lg">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h4 className="text-white font-semibold text-lg">{t.ioc}</h4>
-                      <p className="text-cyan-400 text-xs">{t.type}</p>
+              {topThreats.length > 0 ? (
+                topThreats.map((t, i) => (
+                  <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-[#1a1b1e]/80 to-[#141518]/80 p-5 rounded-2xl border border-cyan-500/20 backdrop-blur-sm shadow-lg">
+                    <div className="flex justify-between items-start mb-2">
+                      <div>
+                        <h4 className="text-white font-semibold text-lg">{t.ioc}</h4>
+                        <p className="text-cyan-400 text-xs">{t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()}</p>
+                      </div>
+                      <div className="text-right">
+                        <span className={`text-2xl font-bold ${t.score > 80 ? 'text-red-500' : t.score > 60 ? 'text-orange-500' : 'text-yellow-500'}`}>
+                          {t.score}
+                        </span>
+                        <span className="text-gray-500 text-sm">/100</span>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className={`text-2xl font-bold ${t.score > 80 ? 'text-red-500' : t.score > 60 ? 'text-orange-500' : 'text-yellow-500'}`}>
-                        {t.score}
-                      </span>
-                      <span className="text-gray-500 text-sm">/100</span>
+                    <div className="w-full bg-gray-800 rounded-full h-2 mt-3">
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${t.score}%` }} className={`h-full rounded-full ${t.score > 80 ? 'bg-gradient-to-r from-red-500 to-red-600' : t.score > 60 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 'bg-gradient-to-r from-yellow-500 to-yellow-600'}`} />
                     </div>
-                  </div>
-                  <div className="w-full bg-gray-800 rounded-full h-2 mt-3">
-                    <motion.div initial={{ width: 0 }} animate={{ width: `${t.score}%` }} className={`h-full rounded-full ${t.score > 80 ? 'bg-gradient-to-r from-red-500 to-red-600' : t.score > 60 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 'bg-gradient-to-r from-yellow-500 to-yellow-600'}`} />
-                  </div>
-                </motion.div>
-              ))}
+                  </motion.div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm col-span-3">No threats available for this type.</p>
+              )}
             </div>
             <div className="mt-8 flex justify-between items-center">
               <div className="flex gap-2">
@@ -666,7 +1118,7 @@ export default function CyberDashboard() {
                   <GitBranch size={18} /> Path Finder
                 </motion.button>
               </div>
-              <p className="text-gray-500 text-sm">© 2025 Cyber Team | <a href="#" className="underline text-cyan-400 hover:text-pink-400">GitHub</a></p>
+              <p className="text-gray-500 text-sm">© 2025 Cyber Team | <a href="https://github.com/Syeda-Aliza-Ayaz/ICTA-Integrated-Cyber-Threat-Analyzer" className="underline text-cyan-400 hover:text-pink-400">GitHub</a></p>
             </div>
           </div>
         </motion.div>
