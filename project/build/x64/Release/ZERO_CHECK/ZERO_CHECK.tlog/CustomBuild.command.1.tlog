@@ -1,0 +1,10 @@
+^C:\USERS\SYEDA ALIZA AYAZ\DOCUMENTS\ICTA\PROJECT\BUILD\CMAKEFILES\3CDE50477FB22611941EE32B1B48360A\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/Syeda Aliza Ayaz/Documents/ICTA/project" "-BC:/Users/Syeda Aliza Ayaz/Documents/ICTA/project/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/Syeda Aliza Ayaz/Documents/ICTA/project/build/unified_cta.slnx"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
