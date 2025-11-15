@@ -1123,7 +1123,7 @@ export default function CyberDashboard() {
                   <GitBranch size={18} /> Path Finder
                 </motion.button>
               </div>
-              <p className="text-gray-500 text-sm">© 2025 Cyber Team | <a href="https://github.com/Syeda-Aliza-Ayaz/ICTA-Integrated-Cyber-Threat-Analyzer" className="underline text-cyan-400 hover:text-pink-400">GitHub</a></p>
+              <p className="text-gray-500 text-sm">© 2025 A<sup>3</sup> Team | <a href="https://github.com/Syeda-Aliza-Ayaz/ICTA-Integrated-Cyber-Threat-Analyzer" className="underline text-cyan-400 hover:text-pink-400">GitHub</a></p>
             </div>
           </div>
         </motion.div>
