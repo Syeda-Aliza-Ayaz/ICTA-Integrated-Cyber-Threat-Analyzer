@@ -579,37 +579,7 @@ export default function CyberDashboard() {
     // === CASE 2: NOT FOUND → EXPLICIT ERROR ===
     throw new Error(`IoC "${value}" not found in the database`);
   };
-  // === HELPER: RESET TO NOT FOUND STATE ===
-  // const goToNotFound = () => {
-  //   setIoc(null);
-  //   setGraphMode('global');
-  //   setSelectedNode(null);
-  //   setPathHighlight([]);
-  //   setPrefixMatches([]);
 
-  //   // RESTORE GLOBAL GRAPH
-  //   const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
-  //   const globalData = JSON.parse(getGlobal());
-  //   // Assign colors to global nodes
-  //   globalData.nodes = globalData.nodes.map(node => ({
-  //     ...node,
-  //     type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
-  //     color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
-  //   }));
-  //   setGraphData(globalData);
-  //   setGraphKey(prev => prev + 1);
-
-  //   // RESTORE GLOBAL TOP THREATS
-  //   setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)).map(t => ({
-  //     ...t,
-  //     type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
-  //   })));
-
-  //   // FORCE REMOUNT
-  //   setGraphKey(prev => prev + 1);
-
-  //   toast.error(`IoC "${searchValue}" not found`);
-  // };
   const goToNotFound = () => {
     setIoc(null);
     setGraphMode('global');
@@ -798,8 +768,8 @@ export default function CyberDashboard() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 onClick={resetToGlobal}
-                className="px-4 py-2 bg-gradient-to-r from-blue-900/20 to-blue-700/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 whitespace-nowrap"
-                style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Global View
+                className="px-4 py-2 bg-cyan-500/20 rounded-lg border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 whitespace-nowrap"
+                // style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Global View
               >
                 Global View
               </motion.button>
@@ -890,8 +860,8 @@ export default function CyberDashboard() {
                   placeholder="Prefix: APT29, DDoS, 192..."
                   onChange={handlePrefixChange}
                   onKeyDown={handlePrefixKeyDown}
-                  className="w-80 bg-white/10 text-gray-100 px-4 py-2.5 rounded-lg pr-11 border border-blue-500/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-[#0e0f11]/50 transition-all placeholder-gray-500 text-base"
-                  style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Prefix Search Bar
+                  className="w-80 bg-white/10 text-gray-100 px-4 py-2.5 rounded-lg pr-11 border border-cyan-500/30 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-[#0e0f11]/50 transition-all placeholder-gray-500 text-base bg-cyan-500/20 rounded-lg border text-cyan-400 hover:bg-cyan-500/30"
+                  // style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Prefix Search Bar
                 />
 
                 {/* SEARCH ICON */}
@@ -906,7 +876,7 @@ export default function CyberDashboard() {
                       setSelectedIndex(-1);
                     }
                   }}
-                  className="absolute right-3 top-3 text-blue-400 hover:text-pink-400 cursor-pointer transition-colors opacity-70 hover:opacity-100"
+                  className="absolute right-3 top-3 text-cyan-500 hover:text-pink-400 cursor-pointer transition-colors opacity-70 hover:opacity-100"
                   size={20}
                 />
 
@@ -916,7 +886,7 @@ export default function CyberDashboard() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute mt-1 w-full rounded-xl border border-blue-500/30 bg-[#0f0f11]/95 backdrop-blur-md shadow-2xl text-gray-200 z-[200] max-h-64 overflow-y-auto"
+                    className="absolute mt-1 w-full rounded-xl border border-cyan-500/30 bg-[#0f0f11]/95 backdrop-blur-md shadow-2xl text-gray-200 z-[200] max-h-64 overflow-y-auto"
                     style={{
                       top: prefixRef.current?.getBoundingClientRect()?.bottom + window.scrollY,
                       left: prefixRef.current?.getBoundingClientRect()?.left,
@@ -926,7 +896,7 @@ export default function CyberDashboard() {
                     {prefixMatches.map((m, i) => (
                       <li
                         key={i}
-                        className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedIndex ? 'bg-blue-500/30 text-blue-300' : 'hover:bg-blue-500/20'}`}
+                        className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedIndex ? 'bg-cyan-500/30 text-blue-300' : 'hover:bg-cyan-500/20'}`}
                         onClick={() => {
                           if (prefixInputRef.current) prefixInputRef.current.value = m;
                           setSearchValue(m);

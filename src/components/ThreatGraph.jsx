@@ -149,7 +149,7 @@ export default function ThreatGraph({
       svg.on('.zoom', null);
     };
   }, [graphData, pathHighlight, selectedNode, onNodeClick, setSelectedNode, graphKey]);
-  const exportPNG = () => {
+const exportPNG = () => {
     const svg = svgRef.current;
     const serializer = new XMLSerializer();
     const source = serializer.serializeToString(svg);
