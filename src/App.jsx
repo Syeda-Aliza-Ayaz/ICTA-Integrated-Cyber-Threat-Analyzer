@@ -727,9 +727,9 @@ export default function CyberDashboard() {
       a.click();
       toast.success('Report exported as JSON');
     } else if (format === 'pdf') {
-      const graphEl = document.querySelector('.flex-1');
+      const graphEl = document.querySelector('svg'); // Target the SVG directly
       if (!graphEl) return toast.error('Graph not ready');
-      const canvas = await html2canvas(graphEl, { backgroundColor: '#0e0f11', scale: 2 });
+      const canvas = await html2canvas(graphEl, { backgroundColor: null, scale: 2 }); // No background override
       const img = canvas.toDataURL('image/png');
       const pdf = new jsPDF('l', 'mm', 'a4');
       const width = pdf.internal.pageSize.getWidth();
@@ -773,6 +773,8 @@ export default function CyberDashboard() {
     );
   }
 
+  // ... (keep the existing imports and state setup) ...
+
   return (
     <>
       <div className="w-screen min-h-screen bg-gradient-to-b from-[#0e0f11] to-[#18191c] text-gray-200 flex flex-col overflow-x-hidden">
@@ -783,8 +785,8 @@ export default function CyberDashboard() {
           className="border-b border-cyan-900/30 px-6 py-4 backdrop-blur-sm bg-white/5"
         >
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-4">
-              <motion.div whileHover={{ scale: 1.1 }} className="w-16 h-16 rounded-xl overflow-hidden shadow-lg shadow-cyan-500/30">
+            <div className="flex items-center gap-8"> {/* Increased gap to shift logo right */}
+              <motion.div whileHover={{ scale: 1.1 }} className="w-16 h-16 rounded-xl overflow-hidden">
                 <img src="/ICTA-logo.png" alt="ICTA Logo" className="w-full h-full object-contain" />
               </motion.div>
               <div>
@@ -796,7 +798,8 @@ export default function CyberDashboard() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 onClick={resetToGlobal}
-                className="px-4 py-2 bg-gradient-to-r from-green-500/20 to-green-700/20 rounded-lg border border-green-500/30 text-green-400 hover:bg-green-500/30 whitespace-nowrap"
+                className="px-4 py-2 bg-gradient-to-r from-blue-900/20 to-blue-700/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 whitespace-nowrap"
+                style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Global View
               >
                 Global View
               </motion.button>
@@ -815,13 +818,14 @@ export default function CyberDashboard() {
                   role="combobox"
                   aria-expanded={showTypeDropdown}
                   aria-label="Filter by threat type"
-                  className={`w-48 bg-white/10 text-cyan-300 px-4 py-2.5 rounded-lg border border-pink-500/20 hover:border-pink-500/50 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all cursor-pointer flex items-center justify-between ${isTypeLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`w-48 bg-white/10 text-yellow-300 px-4 py-2.5 rounded-lg border border-yellow-500/20 hover:border-yellow-500/50 focus:outline-none focus:ring-2 focus:ring-yellow-500 transition-all cursor-pointer flex items-center justify-between ${isTypeLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  style={{ backgroundColor: '#6a5607ff' }} // Explicit yellow for All Types
                 >
                   <span className="text-sm font-medium">
                     {isTypeLoading ? 'Loading...' : selectedType}
                   </span>
                   <ChevronDown
-                    className="text-pink-400 hover:text-pink-300 transition-colors opacity-70 hover:opacity-100"
+                    className="text-yellow-400 hover:text-yellow-300 transition-colors opacity-70 hover:opacity-100"
                     size={20}
                   />
                 </motion.div>
@@ -831,7 +835,7 @@ export default function CyberDashboard() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute mt-1 w-full rounded-lg border border-pink-500/30 bg-[#0f0f11]/95 backdrop-blur-md shadow-2xl text-gray-200 z-[1000] pointer-events-auto"
+                    className="absolute mt-1 w-full rounded-lg border border-yellow-500/30 bg-[#0f0f11]/95 backdrop-blur-md shadow-2xl text-gray-200 z-[1000] pointer-events-auto"
                     style={{
                       top: typeFilterRef.current?.getBoundingClientRect()?.bottom + window.scrollY,
                       left: typeFilterRef.current?.getBoundingClientRect()?.left,
@@ -841,7 +845,7 @@ export default function CyberDashboard() {
                     {['', ...availableTypes].map((type, i) => (
                       <li
                         key={i}
-                        className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedTypeIndex ? 'bg-pink-500/30 text-pink-300' : 'hover:bg-pink-500/20'}`}
+                        className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedTypeIndex ? 'bg-yellow-500/30 text-yellow-300' : 'hover:bg-yellow-500/20'}`}
                         onMouseEnter={() => setSelectedTypeIndex(i)}
                         onMouseDown={(e) => e.stopPropagation()}
                         onClick={(e) => {
@@ -870,7 +874,7 @@ export default function CyberDashboard() {
                         aria-selected={i === selectedTypeIndex}
                       >
                         <span className="font-mono">{type || 'All Types'}</span>
-                        <span className="text-xs text-pink-400">Select</span>
+                        <span className="text-xs text-yellow-400">Select</span>
                       </li>
                     ))}
                   </motion.ul>,
@@ -886,7 +890,8 @@ export default function CyberDashboard() {
                   placeholder="Prefix: APT29, DDoS, 192..."
                   onChange={handlePrefixChange}
                   onKeyDown={handlePrefixKeyDown}
-                  className="w-80 bg-white/10 text-gray-100 px-4 py-2.5 rounded-lg pr-11 border border-purple-500/20 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:bg-[#0e0f11]/50 transition-all placeholder-gray-500 text-base"
+                  className="w-80 bg-white/10 text-gray-100 px-4 py-2.5 rounded-lg pr-11 border border-blue-500/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-[#0e0f11]/50 transition-all placeholder-gray-500 text-base"
+                  style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Prefix Search Bar
                 />
 
                 {/* SEARCH ICON */}
@@ -901,7 +906,7 @@ export default function CyberDashboard() {
                       setSelectedIndex(-1);
                     }
                   }}
-                  className="absolute right-3 top-3 text-purple-400 hover:text-pink-400 cursor-pointer transition-colors opacity-70 hover:opacity-100"
+                  className="absolute right-3 top-3 text-blue-400 hover:text-pink-400 cursor-pointer transition-colors opacity-70 hover:opacity-100"
                   size={20}
                 />
 
@@ -911,7 +916,7 @@ export default function CyberDashboard() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute mt-1 w-full rounded-xl border border-cyan-500/30 bg-[#0f0f11]/95 backdrop-blur-md shadow-2xl text-gray-200 z-[200] max-h-64 overflow-y-auto"
+                    className="absolute mt-1 w-full rounded-xl border border-blue-500/30 bg-[#0f0f11]/95 backdrop-blur-md shadow-2xl text-gray-200 z-[200] max-h-64 overflow-y-auto"
                     style={{
                       top: prefixRef.current?.getBoundingClientRect()?.bottom + window.scrollY,
                       left: prefixRef.current?.getBoundingClientRect()?.left,
@@ -921,8 +926,7 @@ export default function CyberDashboard() {
                     {prefixMatches.map((m, i) => (
                       <li
                         key={i}
-                        className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedIndex ? 'bg-cyan-500/30 text-cyan-300' : 'hover:bg-cyan-500/20'
-                          }`}
+                        className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedIndex ? 'bg-blue-500/30 text-blue-300' : 'hover:bg-blue-500/20'}`}
                         onClick={() => {
                           if (prefixInputRef.current) prefixInputRef.current.value = m;
                           setSearchValue(m);
@@ -932,7 +936,7 @@ export default function CyberDashboard() {
                         }}
                       >
                         <span className="font-mono">{m}</span>
-                        <span className="text-xs text-cyan-400">Click or Enter</span>
+                        <span className="text-xs text-blue-400">Click or Enter</span>
                       </li>
                     ))}
                   </motion.ul>,
@@ -952,41 +956,39 @@ export default function CyberDashboard() {
             className="w-64 bg-[#141518]/90 rounded-2xl p-6 backdrop-blur-lg border border-cyan-500/20 shadow-lg shadow-cyan-500/10 space-y-6"
           >
             <div className="text-center">
-              {/* Team Collage Image */}
               <motion.div
                 whileHover={{ scale: 1.05, rotate: 2 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden border-4 border-cyan-400/50 shadow-xl shadow-pink-500/20"
+                className="w-28 h-28 mx-auto mb-4 rounded-full overflow-hidden border-4 border-cyan-400/50 shadow-xl shadow-pink-500/15"
               >
                 <img
-                  src="team-collage.jpg"
+                  src="project.jpg"
                   alt="Cyber Threat Team Collage"
                   className="w-full h-full object-cover"
                 />
               </motion.div>
-              <h3 className="text-white font-bold text-2xl tracking-tight">Future Cyber Defenders</h3>
-              <p className="text-cyan-300 text-sm font-medium">Building the Ultimate Threat Analyzer!</p>
+              <h3 className="text-white font-bold text-2xl tracking-tight">Byte-Sized Security Squad</h3>
             </div>
             <div className="space-y-3 text-sm text-gray-300">
               <div className="flex items-center gap-3 hover:bg-cyan-500/10 p-2 rounded-lg transition-all">
                 <span className="w-3 h-3 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full"></span>
                 <div>
                   <p className="font-semibold text-white">Syeda Aliza Ayaz</p>
-                  <p className="text-cyan-400 text-xs">Code Wizard & Team Lead</p>
+                  <p className="text-cyan-400 text-xs">Roll No: CT-24219</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 hover:bg-pink-500/10 p-2 rounded-lg transition-all">
                 <span className="w-3 h-3 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full"></span>
                 <div>
                   <p className="font-semibold text-white">Arooj Zahra</p>
-                  <p className="text-pink-400 text-xs">UI/UX Enthusiast</p>
+                  <p className="text-pink-400 text-xs">Roll No: CT-24215</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 hover:bg-yellow-500/10 p-2 rounded-lg transition-all">
                 <span className="w-3 h-3 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full"></span>
                 <div>
                   <p className="font-semibold text-white">Syeda Amna Zahid</p>
-                  <p className="text-yellow-400 text-xs">Tech Explorer</p>
+                  <p className="text-yellow-400 text-xs">Roll No: CT-24217</p>
                 </div>
               </div>
             </div>
@@ -995,9 +997,12 @@ export default function CyberDashboard() {
               href="https://github.com/Syeda-Aliza-Ayaz/ICTA-Integrated-Cyber-Threat-Analyzer"
               target="_blank"
               whileHover={{ scale: 1.05 }}
-              className="block text-center px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-pink-500/20 rounded-lg border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/30 text-sm font-medium"
+              className="block text-center px-4 py-2 bg-gradient-to-r from-cyan-500/20 to-pink-500/20 rounded-lg border border-cyan-500/30 text-cyan-300 hover:bg-cyan-500/30 text-sm font-medium flex items-center justify-center gap-2"
             >
-              Check Out Our Project!
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-cyan-300">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+              Code
             </motion.a>
           </motion.div>
 

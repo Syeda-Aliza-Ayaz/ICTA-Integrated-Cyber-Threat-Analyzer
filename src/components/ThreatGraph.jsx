@@ -149,7 +149,6 @@ export default function ThreatGraph({
       svg.on('.zoom', null);
     };
   }, [graphData, pathHighlight, selectedNode, onNodeClick, setSelectedNode, graphKey]);
-
   const exportPNG = () => {
     const svg = svgRef.current;
     const serializer = new XMLSerializer();
@@ -159,9 +158,12 @@ export default function ThreatGraph({
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = 800; canvas.height = 600;
+      canvas.width = 800;
+      canvas.height = 600;
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#0f1013'; ctx.fillRect(0, 0, 800, 600);
+      // Remove solid background, use transparent or match theme
+      ctx.fillStyle = 'rgba(14, 15, 17, 0.8)'; // Semi-transparent to match app background
+      ctx.fillRect(0, 0, 800, 600);
       ctx.drawImage(img, 0, 0);
       canvas.toBlob(blob => {
         const a = document.createElement('a');
