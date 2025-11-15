@@ -1,3 +1,0 @@
-C:/Users/Syeda Aliza Ayaz/Documents/ICTA/project/build/CMakeFiles/unified_cta.dir
-C:/Users/Syeda Aliza Ayaz/Documents/ICTA/project/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Syeda Aliza Ayaz/Documents/ICTA/project/build/CMakeFiles/ZERO_CHECK.dir
