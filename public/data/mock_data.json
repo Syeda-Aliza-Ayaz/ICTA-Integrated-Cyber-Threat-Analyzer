@@ -5,11 +5,18 @@
     "threat": "DDoS-Tsunami",
     "confidence_level": 95,
     "malware": "DDoS-Tsunami",
-    "tags": ["malware", "c2"],
+    "tags": [
+      "malware",
+      "c2"
+    ],
     "first_seen": "2025-10-24",
     "last_seen": "2025-11-08",
     "score": 95,
-    "relatedIoCs": ["trojanX_hash_1234", "10.0.0.5", "bad-domain-33.com"]
+    "relatedIoCs": [
+      "trojanX_hash_1234",
+      "10.0.0.5",
+      "bad-domain-33.com"
+    ]
   },
   {
     "ioc": "trojanX_hash_1234",
@@ -17,11 +24,18 @@
     "threat": "DDoS-Tsunami",
     "confidence_level": 94,
     "malware": "DDoS-Tsunami",
-    "tags": ["trojan", "hash"],
+    "tags": [
+      "trojan",
+      "hash"
+    ],
     "first_seen": "2025-10-23",
     "last_seen": "2025-11-08",
     "score": 94,
-    "relatedIoCs": ["192.168.1.101", "200.1.2.10", "worm-payload-X"]
+    "relatedIoCs": [
+      "192.168.1.101",
+      "200.1.2.10",
+      "worm-payload-X"
+    ]
   },
   {
     "ioc": "maliciousdomain.com",
@@ -29,11 +43,18 @@
     "threat": "Phishing-Kit-2025",
     "confidence_level": 75,
     "malware": "Phishing-Kit-2025",
-    "tags": ["phishing", "domain"],
+    "tags": [
+      "phishing",
+      "domain"
+    ],
     "first_seen": "2025-10-20",
     "last_seen": "2025-11-08",
     "score": 75,
-    "relatedIoCs": ["fake-bank.info", "phishing-hash-A", "paypal-phish.net"]
+    "relatedIoCs": [
+      "fake-bank.info",
+      "phishing-hash-A",
+      "paypal-phish.net"
+    ]
   },
   {
     "ioc": "45.67.89.22",
@@ -41,11 +62,18 @@
     "threat": "Credential-Stuffing-Bot",
     "confidence_level": 45,
     "malware": "Credential-Stuffing-Bot",
-    "tags": ["botnet", "ip"],
+    "tags": [
+      "botnet",
+      "ip"
+    ],
     "first_seen": "2025-09-15",
     "last_seen": "2025-11-08",
     "score": 45,
-    "relatedIoCs": ["login-steal.xyz", "pwned-login-site.cc", "keygen-tool.exe"]
+    "relatedIoCs": [
+      "login-steal.xyz",
+      "pwned-login-site.cc",
+      "keygen-tool.exe"
+    ]
   },
   {
     "ioc": "10.0.0.5",
@@ -53,11 +81,18 @@
     "threat": "DDoS-Tsunami",
     "confidence_level": 90,
     "malware": "DDoS-Tsunami",
-    "tags": ["malware", "ip"],
+    "tags": [
+      "malware",
+      "ip"
+    ],
     "first_seen": "2025-10-24",
     "last_seen": "2025-11-08",
     "score": 90,
-    "relatedIoCs": ["192.168.1.101", "trojan-B-v2.0", "200.1.2.10"]
+    "relatedIoCs": [
+      "192.168.1.101",
+      "trojan-B-v2.0",
+      "200.1.2.10"
+    ]
   },
   {
     "ioc": "phishing-hash-A",
@@ -65,11 +100,18 @@
     "threat": "Phishing-Kit-2025",
     "confidence_level": 73,
     "malware": "Phishing-Kit-2025",
-    "tags": ["phishing", "hash"],
+    "tags": [
+      "phishing",
+      "hash"
+    ],
     "first_seen": "2025-10-20",
     "last_seen": "2025-11-08",
     "score": 73,
-    "relatedIoCs": ["maliciousdomain.com", "fake-bank.info", "free-gift-site.xyz"]
+    "relatedIoCs": [
+      "maliciousdomain.com",
+      "fake-bank.info",
+      "free-gift-site.xyz"
+    ]
   },
   {
     "ioc": "malware.exe",
@@ -77,11 +119,18 @@
     "threat": "Ransomware-2025",
     "confidence_level": 98,
     "malware": "Ransomware-2025",
-    "tags": ["ransomware", "hash"],
+    "tags": [
+      "ransomware",
+      "hash"
+    ],
     "first_seen": "2025-10-25",
     "last_seen": "2025-11-08",
     "score": 98,
-    "relatedIoCs": ["crypto-miner.exe", "cryptolocker-v3.bin", "10.10.10.20"]
+    "relatedIoCs": [
+      "crypto-miner.exe",
+      "cryptolocker-v3.bin",
+      "10.10.10.20"
+    ]
   },
   {
     "ioc": "fake-bank.info",
@@ -89,11 +138,18 @@
     "threat": "Phishing-Kit-2025",
     "confidence_level": 70,
     "malware": "Phishing-Kit-2025",
-    "tags": ["phishing", "domain"],
+    "tags": [
+      "phishing",
+      "domain"
+    ],
     "first_seen": "2025-10-21",
     "last_seen": "2025-11-08",
     "score": 70,
-    "relatedIoCs": ["maliciousdomain.com", "phishing-hash-A", "paypal-phish.net"]
+    "relatedIoCs": [
+      "maliciousdomain.com",
+      "phishing-hash-A",
+      "paypal-phish.net"
+    ]
   },
   {
     "ioc": "crypto-miner.exe",
@@ -101,11 +157,18 @@
     "threat": "Ransomware-2025",
     "confidence_level": 96,
     "malware": "Ransomware-2025",
-    "tags": ["ransomware", "hash"],
+    "tags": [
+      "ransomware",
+      "hash"
+    ],
     "first_seen": "2025-10-25",
     "last_seen": "2025-11-08",
     "score": 96,
-    "relatedIoCs": ["malware.exe", "cryptolocker-v3.bin", "final-hash-Z"]
+    "relatedIoCs": [
+      "malware.exe",
+      "cryptolocker-v3.bin",
+      "final-hash-Z"
+    ]
   },
   {
     "ioc": "200.1.2.10",
@@ -113,11 +176,18 @@
     "threat": "DDoS-Tsunami",
     "confidence_level": 88,
     "malware": "DDoS-Tsunami",
-    "tags": ["malware", "ip"],
+    "tags": [
+      "malware",
+      "ip"
+    ],
     "first_seen": "2025-10-24",
     "last_seen": "2025-11-08",
     "score": 88,
-    "relatedIoCs": ["trojanX_hash_1234", "10.0.0.5", "bad-domain-33.com"]
+    "relatedIoCs": [
+      "trojanX_hash_1234",
+      "10.0.0.5",
+      "bad-domain-33.com"
+    ]
   },
   {
     "ioc": "192.168.1.200",
@@ -125,11 +195,18 @@
     "threat": "Scanner-Botnet",
     "confidence_level": 60,
     "malware": "Scanner-Botnet",
-    "tags": ["botnet", "ip"],
+    "tags": [
+      "botnet",
+      "ip"
+    ],
     "first_seen": "2025-10-17",
     "last_seen": "2025-11-08",
     "score": 60,
-    "relatedIoCs": ["1.1.1.1", "172.31.255.255", "scan_47.88.99.1"]
+    "relatedIoCs": [
+      "1.1.1.1",
+      "172.31.255.255",
+      "scan_47.88.99.1"
+    ]
   },
   {
     "ioc": "recon-script-D",
@@ -137,11 +214,18 @@
     "threat": "Reconnaissance",
     "confidence_level": 58,
     "malware": "Reconnaissance",
-    "tags": ["recon", "hash"],
+    "tags": [
+      "recon",
+      "hash"
+    ],
     "first_seen": "2025-10-18",
     "last_seen": "2025-11-08",
     "score": 58,
-    "relatedIoCs": ["powershell-script", "shell-script-1", "172.20.10.1"]
+    "relatedIoCs": [
+      "powershell-script",
+      "shell-script-1",
+      "172.20.10.1"
+    ]
   },
   {
     "ioc": "login-steal.xyz",
@@ -149,11 +233,18 @@
     "threat": "Credential-Stuffing-Bot",
     "confidence_level": 42,
     "malware": "Credential-Stuffing-Bot",
-    "tags": ["phishing", "domain"],
+    "tags": [
+      "phishing",
+      "domain"
+    ],
     "first_seen": "2025-09-15",
     "last_seen": "2025-11-08",
     "score": 42,
-    "relatedIoCs": ["45.67.89.22", "pwned-login-site.cc", "keygen-tool.exe"]
+    "relatedIoCs": [
+      "45.67.89.22",
+      "pwned-login-site.cc",
+      "keygen-tool.exe"
+    ]
   },
   {
     "ioc": "10.10.10.20",
@@ -161,11 +252,18 @@
     "threat": "Ransomware-2025",
     "confidence_level": 92,
     "malware": "Ransomware-2025",
-    "tags": ["ransomware", "ip"],
+    "tags": [
+      "ransomware",
+      "ip"
+    ],
     "first_seen": "2025-10-25",
     "last_seen": "2025-11-08",
     "score": 92,
-    "relatedIoCs": ["malware.exe", "cryptolocker-v3.bin", "10.1.2.3"]
+    "relatedIoCs": [
+      "malware.exe",
+      "cryptolocker-v3.bin",
+      "10.1.2.3"
+    ]
   },
   {
     "ioc": "trojan-B-v2.0",
@@ -173,11 +271,18 @@
     "threat": "DDoS-Tsunami",
     "confidence_level": 89,
     "malware": "DDoS-Tsunami",
-    "tags": ["trojan", "hash"],
+    "tags": [
+      "trojan",
+      "hash"
+    ],
     "first_seen": "2025-10-24",
     "last_seen": "2025-11-08",
     "score": 89,
-    "relatedIoCs": ["192.168.1.101", "10.0.0.5", "worm-payload-X"]
+    "relatedIoCs": [
+      "192.168.1.101",
+      "10.0.0.5",
+      "worm-payload-X"
+    ]
   },
   {
     "ioc": "pwned-login-site.cc",
@@ -185,11 +290,18 @@
     "threat": "Credential-Stuffing-Bot",
     "confidence_level": 40,
     "malware": "Credential-Stuffing-Bot",
-    "tags": ["phishing", "domain"],
+    "tags": [
+      "phishing",
+      "domain"
+    ],
     "first_seen": "2025-09-16",
     "last_seen": "2025-11-08",
     "score": 40,
-    "relatedIoCs": ["login-steal.xyz", "banking-trojan-F", "keygen-tool.exe"]
+    "relatedIoCs": [
+      "login-steal.xyz",
+      "banking-trojan-F",
+      "keygen-tool.exe"
+    ]
   },
   {
     "ioc": "cryptolocker-v3.bin",
@@ -197,11 +309,18 @@
     "threat": "Ransomware-2025",
     "confidence_level": 97,
     "malware": "Ransomware-2025",
-    "tags": ["ransomware", "hash"],
+    "tags": [
+      "ransomware",
+      "hash"
+    ],
     "first_seen": "2025-10-26",
     "last_seen": "2025-11-08",
     "score": 97,
-    "relatedIoCs": ["malware.exe", "crypto-miner.exe", "final-hash-Z"]
+    "relatedIoCs": [
+      "malware.exe",
+      "crypto-miner.exe",
+      "final-hash-Z"
+    ]
   },
   {
     "ioc": "malicious-link.biz",
@@ -209,11 +328,18 @@
     "threat": "Phishing-Kit-2025",
     "confidence_level": 68,
     "malware": "Phishing-Kit-2025",
-    "tags": ["phishing", "domain"],
+    "tags": [
+      "phishing",
+      "domain"
+    ],
     "first_seen": "2025-10-21",
     "last_seen": "2025-11-08",
     "score": 68,
-    "relatedIoCs": ["maliciousdomain.com", "fake-bank.info", "paypal-phish.net"]
+    "relatedIoCs": [
+      "maliciousdomain.com",
+      "fake-bank.info",
+      "paypal-phish.net"
+    ]
   },
   {
     "ioc": "172.31.255.255",
@@ -221,11 +347,18 @@
     "threat": "Scanner-Botnet",
     "confidence_level": 62,
     "malware": "Scanner-Botnet",
-    "tags": ["botnet", "ip"],
+    "tags": [
+      "botnet",
+      "ip"
+    ],
     "first_seen": "2025-10-18",
     "last_seen": "2025-11-08",
     "score": 62,
-    "relatedIoCs": ["192.168.1.200", "scan_47.88.99.1", "172.16.20.1"]
+    "relatedIoCs": [
+      "192.168.1.200",
+      "scan_47.88.99.1",
+      "172.16.20.1"
+    ]
   },
   {
     "ioc": "shell-script-1",
@@ -233,11 +366,17 @@
     "threat": "Reconnaissance",
     "confidence_level": 55,
     "malware": "Reconnaissance",
-    "tags": ["recon", "hash"],
+    "tags": [
+      "recon",
+      "hash"
+    ],
     "first_seen": "2025-10-19",
     "last_seen": "2025-11-08",
     "score": 55,
-    "relatedIoCs": ["powershell-script", "recon-script-D"]
+    "relatedIoCs": [
+      "powershell-script",
+      "recon-script-D"
+    ]
   },
   {
     "ioc": "10.255.1.1",
@@ -245,11 +384,18 @@
     "threat": "DDoS-Tsunami",
     "confidence_level": 85,
     "malware": "DDoS-Tsunami",
-    "tags": ["malware", "ip"],
+    "tags": [
+      "malware",
+      "ip"
+    ],
     "first_seen": "2025-10-24",
     "last_seen": "2025-11-08",
     "score": 85,
-    "relatedIoCs": ["200.1.2.10", "10.2.3.4", "trojan-B-v2.0"]
+    "relatedIoCs": [
+      "200.1.2.10",
+      "10.2.3.4",
+      "trojan-B-v2.0"
+    ]
   },
   {
     "ioc": "keylogger-C.exe",
@@ -257,11 +403,18 @@
     "threat": "Ransomware-2025",
     "confidence_level": 91,
     "malware": "Ransomware-2025",
-    "tags": ["ransomware", "hash"],
+    "tags": [
+      "ransomware",
+      "hash"
+    ],
     "first_seen": "2025-10-26",
     "last_seen": "2025-11-08",
     "score": 91,
-    "relatedIoCs": ["login-steal.xyz", "10.10.10.20", "malware.exe"]
+    "relatedIoCs": [
+      "login-steal.xyz",
+      "10.10.10.20",
+      "malware.exe"
+    ]
   },
   {
     "ioc": "paypal-phish.net",
@@ -269,11 +422,18 @@
     "threat": "Phishing-Kit-2025",
     "confidence_level": 72,
     "malware": "Phishing-Kit-2025",
-    "tags": ["phishing", "domain"],
+    "tags": [
+      "phishing",
+      "domain"
+    ],
     "first_seen": "2025-10-22",
     "last_seen": "2025-11-08",
     "score": 72,
-    "relatedIoCs": ["maliciousdomain.com", "fake-bank.info", "free-gift-site.xyz"]
+    "relatedIoCs": [
+      "maliciousdomain.com",
+      "fake-bank.info",
+      "free-gift-site.xyz"
+    ]
   },
   {
     "ioc": "worm-payload-X",
@@ -281,11 +441,18 @@
     "threat": "DDoS-Tsunami",
     "confidence_level": 87,
     "malware": "DDoS-Tsunami",
-    "tags": ["malware", "hash"],
+    "tags": [
+      "malware",
+      "hash"
+    ],
     "first_seen": "2025-10-25",
     "last_seen": "2025-11-08",
     "score": 87,
-    "relatedIoCs": ["trojan-B-v2.0", "trojanX_hash_1234", "192.168.1.101"]
+    "relatedIoCs": [
+      "trojan-B-v2.0",
+      "trojanX_hash_1234",
+      "192.168.1.101"
+    ]
   },
   {
     "ioc": "10.1.2.3",
@@ -293,11 +460,18 @@
     "threat": "Ransomware-2025",
     "confidence_level": 93,
     "malware": "Ransomware-2025",
-    "tags": ["ransomware", "ip"],
+    "tags": [
+      "ransomware",
+      "ip"
+    ],
     "first_seen": "2025-10-26",
     "last_seen": "2025-11-08",
     "score": 93,
-    "relatedIoCs": ["malware.exe", "crypto-miner.exe", "10.10.10.20"]
+    "relatedIoCs": [
+      "malware.exe",
+      "crypto-miner.exe",
+      "10.10.10.20"
+    ]
   },
   {
     "ioc": "final-hash-Z",
@@ -305,11 +479,18 @@
     "threat": "Ransomware-2025",
     "confidence_level": 99,
     "malware": "Ransomware-2025",
-    "tags": ["ransomware", "hash"],
+    "tags": [
+      "ransomware",
+      "hash"
+    ],
     "first_seen": "2025-10-26",
     "last_seen": "2025-11-08",
     "score": 99,
-    "relatedIoCs": ["crypto-miner.exe", "cryptolocker-v3.bin", "malware.exe"]
+    "relatedIoCs": [
+      "crypto-miner.exe",
+      "cryptolocker-v3.bin",
+      "malware.exe"
+    ]
   },
   {
     "ioc": "scan_47.88.99.1",
@@ -317,10 +498,1594 @@
     "threat": "Scanner-Botnet",
     "confidence_level": 65,
     "malware": "Scanner-Botnet",
-    "tags": ["botnet", "ip"],
+    "tags": [
+      "botnet",
+      "ip"
+    ],
     "first_seen": "2025-10-23",
     "last_seen": "2025-11-08",
     "score": 65,
-    "relatedIoCs": ["192.168.1.200", "172.31.255.255", "172.16.20.1"]
+    "relatedIoCs": [
+      "192.168.1.200",
+      "172.31.255.255",
+      "172.16.20.1"
+    ]
+  },
+  {
+    "ioc": "stealer-agent-77.exe",
+    "type": "Hash",
+    "threat": "Credential-Stealer-Cloud",
+    "confidence_level": 88,
+    "malware": "Credential-Stealer-Cloud",
+    "tags": [
+      "stealer",
+      "hash"
+    ],
+    "first_seen": "2025-10-26",
+    "last_seen": "2025-11-08",
+    "score": 88,
+    "relatedIoCs": [
+      "cloud-sync-fraud.com",
+      "45.90.12.15",
+      "session-swapper.dll"
+    ]
+  },
+  {
+    "ioc": "cloud-sync-fraud.com",
+    "type": "Domain",
+    "threat": "Credential-Stealer-Cloud",
+    "confidence_level": 81,
+    "malware": "Credential-Stealer-Cloud",
+    "tags": [
+      "phishing",
+      "domain"
+    ],
+    "first_seen": "2025-10-27",
+    "last_seen": "2025-11-08",
+    "score": 81,
+    "relatedIoCs": [
+      "stealer-agent-77.exe",
+      "fake-sync-login.net",
+      "session-swapper.dll"
+    ]
+  },
+  {
+    "ioc": "45.90.12.15",
+    "type": "IP",
+    "threat": "Credential-Stealer-Cloud",
+    "confidence_level": 84,
+    "malware": "Credential-Stealer-Cloud",
+    "tags": [
+      "stealer",
+      "ip"
+    ],
+    "first_seen": "2025-10-26",
+    "last_seen": "2025-11-08",
+    "score": 84,
+    "relatedIoCs": [
+      "stealer-agent-77.exe",
+      "session-swapper.dll",
+      "login-harvest-hash"
+    ]
+  },
+  {
+    "ioc": "session-swapper.dll",
+    "type": "Hash",
+    "threat": "Credential-Stealer-Cloud",
+    "confidence_level": 90,
+    "malware": "Credential-Stealer-Cloud",
+    "tags": [
+      "stealer",
+      "hash"
+    ],
+    "first_seen": "2025-10-28",
+    "last_seen": "2025-11-08",
+    "score": 90,
+    "relatedIoCs": [
+      "stealer-agent-77.exe",
+      "cloud-sync-fraud.com",
+      "45.90.12.15"
+    ]
+  },
+  {
+    "ioc": "login-harvest-hash",
+    "type": "Hash",
+    "threat": "Credential-Stealer-Cloud",
+    "confidence_level": 78,
+    "malware": "Credential-Stealer-Cloud",
+    "tags": [
+      "stealer",
+      "hash"
+    ],
+    "first_seen": "2025-10-27",
+    "last_seen": "2025-11-08",
+    "score": 78,
+    "relatedIoCs": [
+      "45.90.12.15",
+      "fake-sync-login.net",
+      "session-swapper.dll"
+    ]
+  },
+  {
+    "ioc": "fake-sync-login.net",
+    "type": "Domain",
+    "threat": "Credential-Stealer-Cloud",
+    "confidence_level": 76,
+    "malware": "Credential-Stealer-Cloud",
+    "tags": [
+      "phishing",
+      "domain"
+    ],
+    "first_seen": "2025-10-27",
+    "last_seen": "2025-11-08",
+    "score": 76,
+    "relatedIoCs": [
+      "cloud-sync-fraud.com",
+      "login-harvest-hash",
+      "session-swapper.dll"
+    ]
+  },
+  {
+    "ioc": "smtp-spam-relay-22.net",
+    "type": "Domain",
+    "threat": "Spam-Botnet-2025",
+    "confidence_level": 55,
+    "malware": "Spam-Botnet-2025",
+    "tags": [
+      "spam",
+      "domain"
+    ],
+    "first_seen": "2025-10-10",
+    "last_seen": "2025-11-08",
+    "score": 55,
+    "relatedIoCs": [
+      "198.51.100.22",
+      "bulk-mailer.exe",
+      "spam-hash-Q"
+    ]
+  },
+  {
+    "ioc": "198.51.100.22",
+    "type": "IP",
+    "threat": "Spam-Botnet-2025",
+    "confidence_level": 59,
+    "malware": "Spam-Botnet-2025",
+    "tags": [
+      "spam",
+      "ip"
+    ],
+    "first_seen": "2025-10-09",
+    "last_seen": "2025-11-08",
+    "score": 59,
+    "relatedIoCs": [
+      "smtp-spam-relay-22.net",
+      "bulk-mailer.exe",
+      "spam-hash-Q"
+    ]
+  },
+  {
+    "ioc": "bulk-mailer.exe",
+    "type": "Hash",
+    "threat": "Spam-Botnet-2025",
+    "confidence_level": 63,
+    "malware": "Spam-Botnet-2025",
+    "tags": [
+      "spam",
+      "hash"
+    ],
+    "first_seen": "2025-10-11",
+    "last_seen": "2025-11-08",
+    "score": 63,
+    "relatedIoCs": [
+      "198.51.100.22",
+      "smtp-spam-relay-22.net",
+      "spam-hash-Q"
+    ]
+  },
+  {
+    "ioc": "spam-hash-Q",
+    "type": "Hash",
+    "threat": "Spam-Botnet-2025",
+    "confidence_level": 52,
+    "malware": "Spam-Botnet-2025",
+    "tags": [
+      "spam",
+      "hash"
+    ],
+    "first_seen": "2025-10-10",
+    "last_seen": "2025-11-08",
+    "score": 52,
+    "relatedIoCs": [
+      "bulk-mailer.exe",
+      "smtp-spam-relay-22.net",
+      "198.51.100.22"
+    ]
+  },
+  {
+    "ioc": "cobaltstrike-beacon-77.exe",
+    "type": "Hash",
+    "threat": "Post-Exploitation",
+    "confidence_level": 99,
+    "malware": "CobaltStrike-Variant",
+    "tags": [
+      "post-exploit",
+      "hash"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 99,
+    "relatedIoCs": [
+      "203.0.113.90",
+      "beacon-c2-host.net",
+      "loader-stage-A"
+    ]
+  },
+  {
+    "ioc": "203.0.113.90",
+    "type": "IP",
+    "threat": "Post-Exploitation",
+    "confidence_level": 97,
+    "malware": "CobaltStrike-Variant",
+    "tags": [
+      "post-exploit",
+      "ip"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 97,
+    "relatedIoCs": [
+      "cobaltstrike-beacon-77.exe",
+      "beacon-c2-host.net",
+      "loader-stage-A"
+    ]
+  },
+  {
+    "ioc": "beacon-c2-host.net",
+    "type": "Domain",
+    "threat": "Post-Exploitation",
+    "confidence_level": 96,
+    "malware": "CobaltStrike-Variant",
+    "tags": [
+      "c2",
+      "domain"
+    ],
+    "first_seen": "2025-10-30",
+    "last_seen": "2025-11-08",
+    "score": 96,
+    "relatedIoCs": [
+      "203.0.113.90",
+      "cobaltstrike-beacon-77.exe",
+      "loader-stage-A"
+    ]
+  },
+  {
+    "ioc": "loader-stage-A",
+    "type": "Hash",
+    "threat": "Post-Exploitation",
+    "confidence_level": 94,
+    "malware": "CobaltStrike-Variant",
+    "tags": [
+      "loader",
+      "hash"
+    ],
+    "first_seen": "2025-10-31",
+    "last_seen": "2025-11-08",
+    "score": 94,
+    "relatedIoCs": [
+      "beacon-c2-host.net",
+      "203.0.113.90",
+      "cobaltstrike-beacon-77.exe"
+    ]
+  },
+  {
+    "ioc": "scanbot-pro-11",
+    "type": "Hash",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 67,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "hash"
+    ],
+    "first_seen": "2025-10-14",
+    "last_seen": "2025-11-08",
+    "score": 67,
+    "relatedIoCs": [
+      "103.44.55.10",
+      "scanner-bot-node.net",
+      "scanbot-A2"
+    ]
+  },
+  {
+    "ioc": "103.44.55.10",
+    "type": "IP",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 70,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "ip"
+    ],
+    "first_seen": "2025-10-13",
+    "last_seen": "2025-11-08",
+    "score": 70,
+    "relatedIoCs": [
+      "scanbot-pro-11",
+      "scanner-bot-node.net",
+      "scanbot-A2"
+    ]
+  },
+  {
+    "ioc": "scanner-bot-node.net",
+    "type": "Domain",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 69,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "domain"
+    ],
+    "first_seen": "2025-10-14",
+    "last_seen": "2025-11-08",
+    "score": 69,
+    "relatedIoCs": [
+      "103.44.55.10",
+      "scanbot-pro-11",
+      "scanbot-A2"
+    ]
+  },
+  {
+    "ioc": "scanbot-A2",
+    "type": "Hash",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 64,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "hash"
+    ],
+    "first_seen": "2025-10-14",
+    "last_seen": "2025-11-08",
+    "score": 64,
+    "relatedIoCs": [
+      "scanbot-pro-11",
+      "103.44.55.10",
+      "scanner-bot-node.net"
+    ]
+  },
+  {
+    "ioc": "ai-injector-v5.bin",
+    "type": "Hash",
+    "threat": "AI-Malware-Injector",
+    "confidence_level": 92,
+    "malware": "AI-Malware-Injector",
+    "tags": [
+      "ai-malware",
+      "hash"
+    ],
+    "first_seen": "2025-10-28",
+    "last_seen": "2025-11-08",
+    "score": 92,
+    "relatedIoCs": [
+      "ai-c2-node.com",
+      "44.33.22.11",
+      "model-poison.dll"
+    ]
+  },
+  {
+    "ioc": "ai-c2-node.com",
+    "type": "Domain",
+    "threat": "AI-Malware-Injector",
+    "confidence_level": 89,
+    "malware": "AI-Malware-Injector",
+    "tags": [
+      "ai-malware",
+      "domain"
+    ],
+    "first_seen": "2025-10-28",
+    "last_seen": "2025-11-08",
+    "score": 89,
+    "relatedIoCs": [
+      "ai-injector-v5.bin",
+      "44.33.22.11",
+      "model-poison.dll"
+    ]
+  },
+  {
+    "ioc": "44.33.22.11",
+    "type": "IP",
+    "threat": "AI-Malware-Injector",
+    "confidence_level": 91,
+    "malware": "AI-Malware-Injector",
+    "tags": [
+      "ai-malware",
+      "ip"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 91,
+    "relatedIoCs": [
+      "ai-injector-v5.bin",
+      "ai-c2-node.com",
+      "model-poison.dll"
+    ]
+  },
+  {
+    "ioc": "model-poison.dll",
+    "type": "Hash",
+    "threat": "AI-Malware-Injector",
+    "confidence_level": 93,
+    "malware": "AI-Malware-Injector",
+    "tags": [
+      "ai-malware",
+      "hash"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 93,
+    "relatedIoCs": [
+      "ai-injector-v5.bin",
+      "ai-c2-node.com",
+      "44.33.22.11"
+    ]
+  },
+  {
+    "ioc": "scan-bot-alpha.exe",
+    "type": "Hash",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 64,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "hash"
+    ],
+    "first_seen": "2025-10-18",
+    "last_seen": "2025-11-08",
+    "score": 64,
+    "relatedIoCs": [
+      "203.0.113.56",
+      "scan-route.net",
+      "scan_47.88.99.1"
+    ]
+  },
+  {
+    "ioc": "203.0.113.56",
+    "type": "IP",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 67,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "ip"
+    ],
+    "first_seen": "2025-10-12",
+    "last_seen": "2025-11-08",
+    "score": 67,
+    "relatedIoCs": [
+      "scan-bot-alpha.exe",
+      "scan-route.net",
+      "172.16.20.1"
+    ]
+  },
+  {
+    "ioc": "scan-route.net",
+    "type": "Domain",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 61,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "domain"
+    ],
+    "first_seen": "2025-10-11",
+    "last_seen": "2025-11-08",
+    "score": 61,
+    "relatedIoCs": [
+      "scan-bot-alpha.exe",
+      "203.0.113.56",
+      "192.168.1.200"
+    ]
+  },
+  {
+    "ioc": "exploit-kit-v5.dll",
+    "type": "Hash",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 89,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "hash"
+    ],
+    "first_seen": "2025-10-22",
+    "last_seen": "2025-11-08",
+    "score": 89,
+    "relatedIoCs": [
+      "exploit-cdn.net",
+      "45.33.1.77",
+      "driveby-loader.exe"
+    ]
+  },
+  {
+    "ioc": "exploit-cdn.net",
+    "type": "Domain",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 87,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "domain"
+    ],
+    "first_seen": "2025-10-21",
+    "last_seen": "2025-11-08",
+    "score": 87,
+    "relatedIoCs": [
+      "exploit-kit-v5.dll",
+      "45.33.1.77",
+      "driveby-loader.exe"
+    ]
+  },
+  {
+    "ioc": "45.33.1.77",
+    "type": "IP",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 85,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "ip"
+    ],
+    "first_seen": "2025-10-19",
+    "last_seen": "2025-11-08",
+    "score": 85,
+    "relatedIoCs": [
+      "exploit-kit-v5.dll",
+      "exploit-cdn.net",
+      "driveby-loader.exe"
+    ]
+  },
+  {
+    "ioc": "driveby-loader.exe",
+    "type": "Hash",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 91,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "loader"
+    ],
+    "first_seen": "2025-10-23",
+    "last_seen": "2025-11-08",
+    "score": 91,
+    "relatedIoCs": [
+      "45.33.1.77",
+      "exploit-kit-v5.dll",
+      "exploit-cdn.net"
+    ]
+  },
+  {
+    "ioc": "fraud-payments.net",
+    "type": "Domain",
+    "threat": "Financial-Malware-2025",
+    "confidence_level": 82,
+    "malware": "Financial-Malware-2025",
+    "tags": [
+      "financial",
+      "phishing"
+    ],
+    "first_seen": "2025-10-26",
+    "last_seen": "2025-11-08",
+    "score": 82,
+    "relatedIoCs": [
+      "steal-money.dll",
+      "185.22.14.9",
+      "atm-swipe-hash"
+    ]
+  },
+  {
+    "ioc": "185.22.14.9",
+    "type": "IP",
+    "threat": "Financial-Malware-2025",
+    "confidence_level": 80,
+    "malware": "Financial-Malware-2025",
+    "tags": [
+      "financial",
+      "ip"
+    ],
+    "first_seen": "2025-10-25",
+    "last_seen": "2025-11-08",
+    "score": 80,
+    "relatedIoCs": [
+      "fraud-payments.net",
+      "steal-money.dll",
+      "atm-swipe-hash"
+    ]
+  },
+  {
+    "ioc": "steal-money.dll",
+    "type": "Hash",
+    "threat": "Financial-Malware-2025",
+    "confidence_level": 84,
+    "malware": "Financial-Malware-2025",
+    "tags": [
+      "financial",
+      "hash"
+    ],
+    "first_seen": "2025-10-27",
+    "last_seen": "2025-11-08",
+    "score": 84,
+    "relatedIoCs": [
+      "atm-swipe-hash",
+      "185.22.14.9",
+      "fraud-payments.net"
+    ]
+  },
+  {
+    "ioc": "atm-swipe-hash",
+    "type": "Hash",
+    "threat": "Financial-Malware-2025",
+    "confidence_level": 79,
+    "malware": "Financial-Malware-2025",
+    "tags": [
+      "financial",
+      "hash"
+    ],
+    "first_seen": "2025-10-26",
+    "last_seen": "2025-11-08",
+    "score": 79,
+    "relatedIoCs": [
+      "fraud-payments.net",
+      "steal-money.dll",
+      "185.22.14.9"
+    ]
+  },
+  {
+    "ioc": "iot-breach-22.local",
+    "type": "Domain",
+    "threat": "IoT-Malware-Helios",
+    "confidence_level": 88,
+    "malware": "IoT-Malware-Helios",
+    "tags": [
+      "iot",
+      "domain"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 88,
+    "relatedIoCs": [
+      "helios-bot.exe",
+      "44.77.12.5",
+      "iot-hash-9090"
+    ]
+  },
+  {
+    "ioc": "44.77.12.5",
+    "type": "IP",
+    "threat": "IoT-Malware-Helios",
+    "confidence_level": 86,
+    "malware": "IoT-Malware-Helios",
+    "tags": [
+      "iot",
+      "ip"
+    ],
+    "first_seen": "2025-10-28",
+    "last_seen": "2025-11-08",
+    "score": 86,
+    "relatedIoCs": [
+      "helios-bot.exe",
+      "iot-breach-22.local",
+      "iot-hash-9090"
+    ]
+  },
+  {
+    "ioc": "helios-bot.exe",
+    "type": "Hash",
+    "threat": "IoT-Malware-Helios",
+    "confidence_level": 90,
+    "malware": "IoT-Malware-Helios",
+    "tags": [
+      "iot",
+      "hash"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 90,
+    "relatedIoCs": [
+      "iot-breach-22.local",
+      "44.77.12.5",
+      "iot-hash-9090"
+    ]
+  },
+  {
+    "ioc": "iot-hash-9090",
+    "type": "Hash",
+    "threat": "IoT-Malware-Helios",
+    "confidence_level": 83,
+    "malware": "IoT-Malware-Helios",
+    "tags": [
+      "iot",
+      "hash"
+    ],
+    "first_seen": "2025-10-30",
+    "last_seen": "2025-11-08",
+    "score": 83,
+    "relatedIoCs": [
+      "44.77.12.5",
+      "helios-bot.exe",
+      "iot-breach-22.local"
+    ]
+  },
+  {
+    "ioc": "vpn-bypass-rootkit.sys",
+    "type": "Hash",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 92,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "hash"
+    ],
+    "first_seen": "2025-10-31",
+    "last_seen": "2025-11-08",
+    "score": 92,
+    "relatedIoCs": [
+      "root-shadow.net",
+      "102.44.55.66",
+      "stealth-driver-x"
+    ]
+  },
+  {
+    "ioc": "root-shadow.net",
+    "type": "Domain",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 90,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "domain"
+    ],
+    "first_seen": "2025-10-30",
+    "last_seen": "2025-11-08",
+    "score": 90,
+    "relatedIoCs": [
+      "vpn-bypass-rootkit.sys",
+      "stealth-driver-x",
+      "102.44.55.66"
+    ]
+  },
+  {
+    "ioc": "102.44.55.66",
+    "type": "IP",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 89,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "ip"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 89,
+    "relatedIoCs": [
+      "vpn-bypass-rootkit.sys",
+      "root-shadow.net",
+      "stealth-driver-x"
+    ]
+  },
+  {
+    "ioc": "stealth-driver-x",
+    "type": "Hash",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 94,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "hash"
+    ],
+    "first_seen": "2025-10-31",
+    "last_seen": "2025-11-08",
+    "score": 94,
+    "relatedIoCs": [
+      "102.44.55.66",
+      "root-shadow.net",
+      "vpn-bypass-rootkit.sys"
+    ]
+  },
+  {
+    "ioc": "ssh-bruteforce-actor",
+    "type": "Hash",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 71,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "hash"
+    ],
+    "first_seen": "2025-10-14",
+    "last_seen": "2025-11-08",
+    "score": 71,
+    "relatedIoCs": [
+      "89.200.12.44",
+      "brute-login.net",
+      "ssh-tactic.dll"
+    ]
+  },
+  {
+    "ioc": "89.200.12.44",
+    "type": "IP",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 69,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "ip"
+    ],
+    "first_seen": "2025-10-15",
+    "last_seen": "2025-11-08",
+    "score": 69,
+    "relatedIoCs": [
+      "ssh-bruteforce-actor",
+      "brute-login.net",
+      "ssh-tactic.dll"
+    ]
+  },
+  {
+    "ioc": "brute-login.net",
+    "type": "Domain",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 72,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "domain"
+    ],
+    "first_seen": "2025-10-16",
+    "last_seen": "2025-11-08",
+    "score": 72,
+    "relatedIoCs": [
+      "ssh-bruteforce-actor",
+      "89.200.12.44",
+      "ssh-tactic.dll"
+    ]
+  },
+  {
+    "ioc": "ssh-tactic.dll",
+    "type": "Hash",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 74,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "hash"
+    ],
+    "first_seen": "2025-10-17",
+    "last_seen": "2025-11-08",
+    "score": 74,
+    "relatedIoCs": [
+      "ssh-bruteforce-actor",
+      "brute-login.net",
+      "89.200.12.44"
+    ]
+  },
+  {
+    "ioc": "android-spy-v4.apk",
+    "type": "Hash",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 86,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "spyware"
+    ],
+    "first_seen": "2025-10-30",
+    "last_seen": "2025-11-08",
+    "score": 86,
+    "relatedIoCs": [
+      "spy-c2.net",
+      "22.44.88.1",
+      "gps-steal.dll"
+    ]
+  },
+  {
+    "ioc": "spy-c2.net",
+    "type": "Domain",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 83,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "domain"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 83,
+    "relatedIoCs": [
+      "android-spy-v4.apk",
+      "22.44.88.1",
+      "gps-steal.dll"
+    ]
+  },
+  {
+    "ioc": "22.44.88.1",
+    "type": "IP",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 80,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "ip"
+    ],
+    "first_seen": "2025-10-28",
+    "last_seen": "2025-11-08",
+    "score": 80,
+    "relatedIoCs": [
+      "spy-c2.net",
+      "android-spy-v4.apk",
+      "gps-steal.dll"
+    ]
+  },
+  {
+    "ioc": "gps-steal.dll",
+    "type": "Hash",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 88,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "hash"
+    ],
+    "first_seen": "2025-10-31",
+    "last_seen": "2025-11-08",
+    "score": 88,
+    "relatedIoCs": [
+      "22.44.88.1",
+      "spy-c2.net",
+      "android-spy-v4.apk"
+    ]
+  },
+  {
+    "ioc": "ai-prompt-injector.exe",
+    "type": "Hash",
+    "threat": "AI-Prompt-Injection",
+    "confidence_level": 91,
+    "malware": "AI-Prompt-Injection",
+    "tags": [
+      "ai",
+      "exploit"
+    ],
+    "first_seen": "2025-10-20",
+    "last_seen": "2025-11-08",
+    "score": 91,
+    "relatedIoCs": [
+      "prompt-hijack.net",
+      "44.11.22.33",
+      "ai-memory-leak.dll"
+    ]
+  },
+  {
+    "ioc": "prompt-hijack.net",
+    "type": "Domain",
+    "threat": "AI-Prompt-Injection",
+    "confidence_level": 88,
+    "malware": "AI-Prompt-Injection",
+    "tags": [
+      "ai",
+      "domain"
+    ],
+    "first_seen": "2025-10-18",
+    "last_seen": "2025-11-08",
+    "score": 88,
+    "relatedIoCs": [
+      "ai-prompt-injector.exe",
+      "44.11.22.33",
+      "ai-memory-leak.dll"
+    ]
+  },
+  {
+    "ioc": "44.11.22.33",
+    "type": "IP",
+    "threat": "AI-Prompt-Injection",
+    "confidence_level": 86,
+    "malware": "AI-Prompt-Injection",
+    "tags": [
+      "ai",
+      "ip"
+    ],
+    "first_seen": "2025-10-17",
+    "last_seen": "2025-11-08",
+    "score": 86,
+    "relatedIoCs": [
+      "prompt-hijack.net",
+      "ai-prompt-injector.exe",
+      "ai-memory-leak.dll"
+    ]
+  },
+  {
+    "ioc": "ai-memory-leak.dll",
+    "type": "Hash",
+    "threat": "AI-Prompt-Injection",
+    "confidence_level": 93,
+    "malware": "AI-Prompt-Injection",
+    "tags": [
+      "ai",
+      "hash"
+    ],
+    "first_seen": "2025-10-21",
+    "last_seen": "2025-11-08",
+    "score": 93,
+    "relatedIoCs": [
+      "44.11.22.33",
+      "ai-prompt-injector.exe",
+      "prompt-hijack.net"
+    ]
+  },
+  {
+    "ioc": "203.45.67.89",
+    "type": "IP",
+    "threat": "DDoS-Tsunami",
+    "confidence_level": 87,
+    "malware": "DDoS-Tsunami",
+    "tags": [
+      "malware",
+      "ip"
+    ],
+    "first_seen": "2025-10-25",
+    "last_seen": "2025-11-08",
+    "score": 87,
+    "relatedIoCs": [
+      "new-trojan-Z.exe",
+      "10.255.1.2",
+      "evil-domain-X.net"
+    ]
+  },
+  {
+    "ioc": "new-trojan-Z.exe",
+    "type": "Hash",
+    "threat": "DDoS-Tsunami",
+    "confidence_level": 85,
+    "malware": "DDoS-Tsunami",
+    "tags": [
+      "trojan",
+      "hash"
+    ],
+    "first_seen": "2025-10-26",
+    "last_seen": "2025-11-08",
+    "score": 85,
+    "relatedIoCs": [
+      "203.45.67.89",
+      "worm-Y-v3",
+      "10.255.1.2"
+    ]
+  },
+  {
+    "ioc": "evil-domain-X.net",
+    "type": "Domain",
+    "threat": "Phishing-Kit-2025",
+    "confidence_level": 74,
+    "malware": "Phishing-Kit-2025",
+    "tags": [
+      "phishing",
+      "domain"
+    ],
+    "first_seen": "2025-10-23",
+    "last_seen": "2025-11-08",
+    "score": 74,
+    "relatedIoCs": [
+      "phish-hash-B",
+      "fake-login.org",
+      "203.45.67.89"
+    ]
+  },
+  {
+    "ioc": "phish-hash-B",
+    "type": "Hash",
+    "threat": "Phishing-Kit-2025",
+    "confidence_level": 71,
+    "malware": "Phishing-Kit-2025",
+    "tags": [
+      "phishing",
+      "hash"
+    ],
+    "first_seen": "2025-10-24",
+    "last_seen": "2025-11-08",
+    "score": 71,
+    "relatedIoCs": [
+      "evil-domain-X.net",
+      "fake-login.org",
+      "paypal-phish.net"
+    ]
+  },
+  {
+    "ioc": "fake-login.org",
+    "type": "Domain",
+    "threat": "Credential-Stuffing-Bot",
+    "confidence_level": 43,
+    "malware": "Credential-Stuffing-Bot",
+    "tags": [
+      "phishing",
+      "domain"
+    ],
+    "first_seen": "2025-09-18",
+    "last_seen": "2025-11-08",
+    "score": 43,
+    "relatedIoCs": [
+      "45.67.89.23",
+      "login-steal-v2.exe",
+      "pwned-login-site.cc"
+    ]
+  },
+  {
+    "ioc": "45.67.89.23",
+    "type": "IP",
+    "threat": "Credential-Stuffing-Bot",
+    "confidence_level": 47,
+    "malware": "Credential-Stuffing-Bot",
+    "tags": [
+      "botnet",
+      "ip"
+    ],
+    "first_seen": "2025-09-17",
+    "last_seen": "2025-11-08",
+    "score": 47,
+    "relatedIoCs": [
+      "fake-login.org",
+      "login-steal-v2.exe",
+      "45.67.89.22"
+    ]
+  },
+  {
+    "ioc": "login-steal-v2.exe",
+    "type": "Hash",
+    "threat": "Credential-Stuffing-Bot",
+    "confidence_level": 46,
+    "malware": "Credential-Stuffing-Bot",
+    "tags": [
+      "botnet",
+      "hash"
+    ],
+    "first_seen": "2025-09-19",
+    "last_seen": "2025-11-08",
+    "score": 46,
+    "relatedIoCs": [
+      "45.67.89.23",
+      "fake-login.org",
+      "keygen-tool.exe"
+    ]
+  },
+  {
+    "ioc": "10.255.1.2",
+    "type": "IP",
+    "threat": "Ransomware-2025",
+    "confidence_level": 94,
+    "malware": "Ransomware-2025",
+    "tags": [
+      "ransomware",
+      "ip"
+    ],
+    "first_seen": "2025-10-27",
+    "last_seen": "2025-11-08",
+    "score": 94,
+    "relatedIoCs": [
+      "new-ransom-Z.exe",
+      "10.1.2.3",
+      "crypto-miner.exe"
+    ]
+  },
+  {
+    "ioc": "new-ransom-Z.exe",
+    "type": "Hash",
+    "threat": "Ransomware-2025",
+    "confidence_level": 95,
+    "malware": "Ransomware-2025",
+    "tags": [
+      "ransomware",
+      "hash"
+    ],
+    "first_seen": "2025-10-28",
+    "last_seen": "2025-11-08",
+    "score": 95,
+    "relatedIoCs": [
+      "10.255.1.2",
+      "cryptolocker-v4.bin",
+      "malware.exe"
+    ]
+  },
+  {
+    "ioc": "cryptolocker-v4.bin",
+    "type": "Hash",
+    "threat": "Ransomware-2025",
+    "confidence_level": 96,
+    "malware": "Ransomware-2025",
+    "tags": [
+      "ransomware",
+      "hash"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 96,
+    "relatedIoCs": [
+      "new-ransom-Z.exe",
+      "10.255.1.2",
+      "final-hash-Z"
+    ]
+  },
+  {
+    "ioc": "worm-Y-v3",
+    "type": "Hash",
+    "threat": "DDoS-Tsunami",
+    "confidence_level": 86,
+    "malware": "DDoS-Tsunami",
+    "tags": [
+      "malware",
+      "hash"
+    ],
+    "first_seen": "2025-10-27",
+    "last_seen": "2025-11-08",
+    "score": 86,
+    "relatedIoCs": [
+      "new-trojan-Z.exe",
+      "203.45.67.89",
+      "200.1.2.10"
+    ]
+  },
+  {
+    "ioc": "scanner-X.exe",
+    "type": "Hash",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 66,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "hash"
+    ],
+    "first_seen": "2025-10-20",
+    "last_seen": "2025-11-08",
+    "score": 66,
+    "relatedIoCs": [
+      "104.55.66.77",
+      "scan-node-Y.net",
+      "scan_47.88.99.1"
+    ]
+  },
+  {
+    "ioc": "104.55.66.77",
+    "type": "IP",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 68,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "ip"
+    ],
+    "first_seen": "2025-10-19",
+    "last_seen": "2025-11-08",
+    "score": 68,
+    "relatedIoCs": [
+      "scanner-X.exe",
+      "scan-node-Y.net",
+      "103.44.55.10"
+    ]
+  },
+  {
+    "ioc": "scan-node-Y.net",
+    "type": "Domain",
+    "threat": "Scanner-Botnet",
+    "confidence_level": 65,
+    "malware": "Scanner-Botnet",
+    "tags": [
+      "botnet",
+      "domain"
+    ],
+    "first_seen": "2025-10-21",
+    "last_seen": "2025-11-08",
+    "score": 65,
+    "relatedIoCs": [
+      "104.55.66.77",
+      "scanner-X.exe",
+      "scanbot-pro-11"
+    ]
+  },
+  {
+    "ioc": "exploit-v6.dll",
+    "type": "Hash",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 90,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "hash"
+    ],
+    "first_seen": "2025-10-24",
+    "last_seen": "2025-11-08",
+    "score": 90,
+    "relatedIoCs": [
+      "exploit-new.net",
+      "46.44.22.88",
+      "driveby-loader-v2.exe"
+    ]
+  },
+  {
+    "ioc": "exploit-new.net",
+    "type": "Domain",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 88,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "domain"
+    ],
+    "first_seen": "2025-10-23",
+    "last_seen": "2025-11-08",
+    "score": 88,
+    "relatedIoCs": [
+      "exploit-v6.dll",
+      "46.44.22.88",
+      "driveby-loader-v2.exe"
+    ]
+  },
+  {
+    "ioc": "46.44.22.88",
+    "type": "IP",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 86,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "ip"
+    ],
+    "first_seen": "2025-10-22",
+    "last_seen": "2025-11-08",
+    "score": 86,
+    "relatedIoCs": [
+      "exploit-new.net",
+      "exploit-v6.dll",
+      "45.33.1.77"
+    ]
+  },
+  {
+    "ioc": "driveby-loader-v2.exe",
+    "type": "Hash",
+    "threat": "Exploit-Kit-2025",
+    "confidence_level": 92,
+    "malware": "Exploit-Kit-2025",
+    "tags": [
+      "exploit",
+      "loader"
+    ],
+    "first_seen": "2025-10-25",
+    "last_seen": "2025-11-08",
+    "score": 92,
+    "relatedIoCs": [
+      "46.44.22.88",
+      "exploit-v6.dll",
+      "exploit-cdn.net"
+    ]
+  },
+  {
+    "ioc": "spyware-v5.apk",
+    "type": "Hash",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 87,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "spyware"
+    ],
+    "first_seen": "2025-10-31",
+    "last_seen": "2025-11-08",
+    "score": 87,
+    "relatedIoCs": [
+      "spy-c2-new.net",
+      "23.55.77.99",
+      "gps-steal-v2.dll"
+    ]
+  },
+  {
+    "ioc": "spy-c2-new.net",
+    "type": "Domain",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 84,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "domain"
+    ],
+    "first_seen": "2025-10-30",
+    "last_seen": "2025-11-08",
+    "score": 84,
+    "relatedIoCs": [
+      "spyware-v5.apk",
+      "23.55.77.99",
+      "gps-steal-v2.dll"
+    ]
+  },
+  {
+    "ioc": "23.55.77.99",
+    "type": "IP",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 82,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "ip"
+    ],
+    "first_seen": "2025-10-29",
+    "last_seen": "2025-11-08",
+    "score": 82,
+    "relatedIoCs": [
+      "spy-c2-new.net",
+      "spyware-v5.apk",
+      "22.44.88.1"
+    ]
+  },
+  {
+    "ioc": "gps-steal-v2.dll",
+    "type": "Hash",
+    "threat": "Mobile-Spyware-2025",
+    "confidence_level": 89,
+    "malware": "Mobile-Spyware-2025",
+    "tags": [
+      "mobile",
+      "hash"
+    ],
+    "first_seen": "2025-11-01",
+    "last_seen": "2025-11-08",
+    "score": 89,
+    "relatedIoCs": [
+      "23.55.77.99",
+      "spy-c2-new.net",
+      "android-spy-v4.apk"
+    ]
+  },
+  {
+    "ioc": "rootkit-X.sys",
+    "type": "Hash",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 93,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "hash"
+    ],
+    "first_seen": "2025-11-01",
+    "last_seen": "2025-11-08",
+    "score": 93,
+    "relatedIoCs": [
+      "root-new.net",
+      "103.22.33.44",
+      "stealth-driver-Y"
+    ]
+  },
+  {
+    "ioc": "root-new.net",
+    "type": "Domain",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 91,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "domain"
+    ],
+    "first_seen": "2025-10-31",
+    "last_seen": "2025-11-08",
+    "score": 91,
+    "relatedIoCs": [
+      "rootkit-X.sys",
+      "103.22.33.44",
+      "stealth-driver-Y"
+    ]
+  },
+  {
+    "ioc": "103.22.33.44",
+    "type": "IP",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 90,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "ip"
+    ],
+    "first_seen": "2025-10-30",
+    "last_seen": "2025-11-08",
+    "score": 90,
+    "relatedIoCs": [
+      "root-new.net",
+      "rootkit-X.sys",
+      "102.44.55.66"
+    ]
+  },
+  {
+    "ioc": "stealth-driver-Y",
+    "type": "Hash",
+    "threat": "Rootkit-Shadow-2025",
+    "confidence_level": 95,
+    "malware": "Rootkit-Shadow-2025",
+    "tags": [
+      "rootkit",
+      "hash"
+    ],
+    "first_seen": "2025-11-02",
+    "last_seen": "2025-11-08",
+    "score": 95,
+    "relatedIoCs": [
+      "103.22.33.44",
+      "root-new.net",
+      "vpn-bypass-rootkit.sys"
+    ]
+  },
+  {
+    "ioc": "brute-force-Z.exe",
+    "type": "Hash",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 73,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "hash"
+    ],
+    "first_seen": "2025-10-18",
+    "last_seen": "2025-11-08",
+    "score": 73,
+    "relatedIoCs": [
+      "90.100.12.55",
+      "brute-new.net",
+      "ssh-tactic-v2.dll"
+    ]
+  },
+  {
+    "ioc": "90.100.12.55",
+    "type": "IP",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 70,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "ip"
+    ],
+    "first_seen": "2025-10-19",
+    "last_seen": "2025-11-08",
+    "score": 70,
+    "relatedIoCs": [
+      "brute-force-Z.exe",
+      "brute-new.net",
+      "89.200.12.44"
+    ]
+  },
+  {
+    "ioc": "brute-new.net",
+    "type": "Domain",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 75,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "domain"
+    ],
+    "first_seen": "2025-10-20",
+    "last_seen": "2025-11-08",
+    "score": 75,
+    "relatedIoCs": [
+      "brute-force-Z.exe",
+      "90.100.12.55",
+      "ssh-tactic.dll"
+    ]
+  },
+  {
+    "ioc": "ssh-tactic-v2.dll",
+    "type": "Hash",
+    "threat": "Bruteforce-SSH-2025",
+    "confidence_level": 76,
+    "malware": "Bruteforce-SSH-2025",
+    "tags": [
+      "bruteforce",
+      "hash"
+    ],
+    "first_seen": "2025-10-21",
+    "last_seen": "2025-11-08",
+    "score": 76,
+    "relatedIoCs": [
+      "brute-new.net",
+      "brute-force-Z.exe",
+      "90.100.12.55"
+    ]
   }
 ]
