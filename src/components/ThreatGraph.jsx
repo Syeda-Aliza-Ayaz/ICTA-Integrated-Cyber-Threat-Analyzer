@@ -150,44 +150,191 @@ export default function ThreatGraph({
     };
   }, [graphData, pathHighlight, selectedNode, onNodeClick, setSelectedNode, graphKey]);
 
-  const exportPNG = () => {
-    const svg = svgRef.current;
-    const serializer = new XMLSerializer();
-    const source = serializer.serializeToString(svg);
-    const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+  // const exportPNG = () => {
+  //   const svg = svgRef.current;
+  //   const serializer = new XMLSerializer();
+  //   const source = serializer.serializeToString(svg);
+  //   const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+  //   const url = URL.createObjectURL(blob);
+  //   const img = new Image();
+  //   img.onload = () => {
+  //     // Calculate bounds of all nodes
+  //     const nodes = graphData.nodes;
+  //     const minX = Math.min(...nodes.map(n => n.x || 0)) - 50;
+  //     const maxX = Math.max(...nodes.map(n => n.x || 0)) + 50;
+  //     const minY = Math.min(...nodes.map(n => n.y || 0)) - 50;
+  //     const maxY = Math.max(...nodes.map(n => n.y || 0)) + 50;
+  //     const width = maxX - minX;
+  //     const height = maxY - minY;
+
+  //     const canvas = document.createElement('canvas');
+  //     canvas.width = width;
+  //     canvas.height = height;
+  //     const ctx = canvas.getContext('2d');
+  //     ctx.fillStyle = 'rgba(14, 15, 17, 0.8)';
+  //     ctx.fillRect(0, 0, width, height);
+  //     ctx.translate(-minX, -minY); // Offset to fit all nodes
+  //     ctx.drawImage(img, 0, 0);
+
+  //     canvas.toBlob(blob => {
+  //       const a = document.createElement('a');
+  //       a.href = URL.createObjectURL(blob);
+  //       a.download = `threat-graph-${mode}.png`;
+  //       a.click();
+  //     });
+  //   };
+  //   img.src = url;
+  // };
+
+  // inside ThreatGraph component (place near resetZoom or helper funcs)
+  const exportPNG = async (filename = `threat-graph-${Date.now()}.png`) => {
+    const svgEl = svgRef.current;
+    if (!svgEl) return alert('Graph not ready');
+
+    // Compute target width/height (use parent container width and your fixed svg height)
+    const targetWidth = svgEl.parentElement?.offsetWidth || 1200;
+    const targetHeight = parseInt(svgEl.getAttribute('height')) || 600;
+
+    // Clone SVG to avoid messing with live svg (and ensure width/height/viewBox present)
+    const clone = svgEl.cloneNode(true);
+
+    // Ensure xmlns
+    if (!clone.getAttribute('xmlns')) {
+      clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    }
+
+    // Set explicit width/height & viewBox so rasterizer knows dimensions
+    clone.setAttribute('width', targetWidth);
+    clone.setAttribute('height', targetHeight);
+    if (!clone.getAttribute('viewBox')) {
+      clone.setAttribute('viewBox', `0 0 ${targetWidth} ${targetHeight}`);
+    }
+
+    // Add a background rect so result doesn't have transparency issues
+    const bgRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    bgRect.setAttribute('x', '0');
+    bgRect.setAttribute('y', '0');
+    bgRect.setAttribute('width', targetWidth.toString());
+    bgRect.setAttribute('height', targetHeight.toString());
+    bgRect.setAttribute('fill', '#0f1013'); // same as your app bg
+    clone.insertBefore(bgRect, clone.firstChild);
+
+    // Serialize
+    const serialized = new XMLSerializer().serializeToString(clone);
+    const blob = new Blob([serialized], { type: 'image/svg+xml;charset=utf-8' });
     const url = URL.createObjectURL(blob);
+
+    // Create image and draw to canvas
     const img = new Image();
+    // If you serve fonts/CORS resources, you can set crossOrigin. Keep it unless needed.
+    // img.crossOrigin = 'anonymous';
+
     img.onload = () => {
-      // Calculate bounds of all nodes
-      const nodes = graphData.nodes;
-      const minX = Math.min(...nodes.map(n => n.x || 0)) - 50;
-      const maxX = Math.max(...nodes.map(n => n.x || 0)) + 50;
-      const minY = Math.min(...nodes.map(n => n.y || 0)) - 50;
-      const maxY = Math.max(...nodes.map(n => n.y || 0)) + 50;
-      const width = maxX - minX;
-      const height = maxY - minY;
+      try {
+        const canvas = document.createElement('canvas');
+        // For crispness, allow devicePixelRatio scaling
+        const scale = window.devicePixelRatio || 2;
+        canvas.width = Math.round(targetWidth * scale);
+        canvas.height = Math.round(targetHeight * scale);
+        canvas.style.width = `${targetWidth}px`;
+        canvas.style.height = `${targetHeight}px`;
 
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = 'rgba(14, 15, 17, 0.8)';
-      ctx.fillRect(0, 0, width, height);
-      ctx.translate(-minX, -minY); // Offset to fit all nodes
-      ctx.drawImage(img, 0, 0);
+        const ctx = canvas.getContext('2d');
+        // fill background (in case)
+        ctx.fillStyle = '#0f1013';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      canvas.toBlob(blob => {
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `threat-graph-${mode}.png`;
-        a.click();
-      });
+        ctx.setTransform(scale, 0, 0, scale, 0, 0); // scale drawing for high DPI
+        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+        // trigger download
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            URL.revokeObjectURL(url);
+            return alert('Failed to create PNG');
+          }
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = filename;
+          link.click();
+          URL.revokeObjectURL(url);
+        }, 'image/png');
+      } catch (err) {
+        console.error('exportPNG error', err);
+        alert('Failed to export PNG — see console');
+      }
     };
+
+    img.onerror = (e) => {
+      console.error('Image load error', e);
+      URL.revokeObjectURL(url);
+      alert('Failed to load SVG as image');
+    };
+
     img.src = url;
   };
 
+
+  // return (
+  //   <div className="relative bg-[#1a1b1e]/80 rounded-2xl p-4 border border-cyan-500/10 shadow-2xl">
+  //     <div className="flex justify-between items-center mb-3 px-2">
+  //       <h3 className="text-white font-bold text-lg">
+  //         {mode === 'global'
+  //           ? 'Global Threat Network'
+  //           : mode === 'cluster'
+  //             ? `Cluster: ${selectedNode?.label || selectedNode?.id || '...'}`
+  //             : mode === 'type'
+  //               ? `Top ${selectedNode?.id || 'Threats'}`
+  //               : 'Threat Graph'
+  //         }
+  //       </h3>
+  //       <div className="flex gap-2">
+  //         <button onClick={exportPNG} className="text-cyan-400 hover:text-pink-400 text-sm">Export PNG</button>
+  //         <button onClick={resetZoom} className="text-cyan-400 hover:text-pink-400 text-sm">Reset Zoom</button>
+  //       </div>
+  //     </div>
+
+  //     <motion.svg
+  //       ref={svgRef}
+  //       width="100%"
+  //       height="600"
+  //       initial={{ opacity: 0 }}
+  //       animate={{ opacity: 1 }}
+  //       transition={{ duration: 0.4 }}
+  //       className="rounded-xl bg-[#0f1013]/50 cursor-grab active:cursor-grabbing"
+  //     />
+  //     <div className="absolute bottom-6 left-6 bg-black/70 backdrop-blur-sm p-4 rounded-xl border border-cyan-500/30 text-xs">
+  //       <h4 className="text-white font-bold mb-2">Legend</h4>
+  //       <div className="space-y-1">
+  //         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#06b6d4]"></div><span className="text-gray-300">IP Address</span></div>
+  //         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div><span className="text-gray-300">Domain</span></div>
+  //         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#ec4899]"></div><span className="text-gray-300">Hash</span></div>
+  //         <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-[#94a3b8]"></div><span className="text-gray-300">Unknown</span></div>
+  //       </div>
+  //       <p className="text-gray-400 mt-2">Node Size = Threat Score</p>
+  //     </div>
+
+  //     {mode === 'cluster' && selectedNode && (
+  //       <div className="absolute bottom-6 right-6 bg-black/70 backdrop-blur-sm p-4 rounded-xl border border-amber-500/30 text-xs">
+  //         <button onClick={() => onPathFind && onPathFind(selectedNode)} className="text-amber-400 hover:text-amber-300">
+  //           Find Path from Root
+  //         </button>
+  //       </div>
+  //     )}
+
+  //     {selectedNode && (
+  //       <div className="absolute top-16 left-4 bg-black/80 backdrop-blur-sm p-4 rounded-xl border border-cyan-500/30 text-sm max-w-xs">
+  //         <p className="text-white font-bold break-all">{selectedNode.id}</p>
+  //         <p className="text-cyan-400">Type: {selectedNode.type}</p>
+  //         <p className="text-yellow-400">Score: {selectedNode.score}/100</p>
+  //       </div>
+  //     )}
+  //   </div>
+  // );
+
+  // Replace the return section
   return (
-    <div className="relative bg-[#1a1b1e]/80 rounded-2xl p-4 border border-cyan-500/10 shadow-2xl">
+    <div className="graph-wrapper relative bg-[#1a1b1e]/80 rounded-2xl p-4 border border-cyan-500/10 shadow-2xl">
       <div className="flex justify-between items-center mb-3 px-2">
         <h3 className="text-white font-bold text-lg">
           {mode === 'global'
@@ -200,8 +347,12 @@ export default function ThreatGraph({
           }
         </h3>
         <div className="flex gap-2">
-          <button onClick={exportPNG} className="text-cyan-400 hover:text-pink-400 text-sm">Export PNG</button>
-          <button onClick={resetZoom} className="text-cyan-400 hover:text-pink-400 text-sm">Reset Zoom</button>
+          <button onClick={() => exportPNG()} className="text-cyan-400 hover:text-pink-400 text-sm">
+            Download PNG
+          </button>
+          <button onClick={resetZoom} className="text-cyan-400 hover:text-pink-400 text-sm">
+            Reset Zoom
+          </button>
         </div>
       </div>
 

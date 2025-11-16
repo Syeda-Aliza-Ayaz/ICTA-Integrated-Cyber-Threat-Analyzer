@@ -6,7 +6,6 @@ import { loadWASM } from './wasm';
 import ThreatGraph from './components/ThreatGraph';
 import { Toaster, toast } from 'react-hot-toast';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
 import { createPortal } from 'react-dom';
 
 export default function CyberDashboard() {
@@ -35,6 +34,8 @@ export default function CyberDashboard() {
   const typeFilterRef = useRef(null);
   const [isTypeLoading, setIsTypeLoading] = useState(false);
   const [availableTypes, setAvailableTypes] = useState([]);
+  const dropdownRef = useRef(null);
+
 
   useEffect(() => {
     console.log('selectedType updated:', selectedType);
@@ -100,9 +101,18 @@ export default function CyberDashboard() {
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (prefixRef.current && !prefixRef.current.contains(e.target)) {
+      // if (prefixRef.current && !prefixRef.current.contains(e.target)) {
+      //   setPrefixMatches([]);
+      // }
+      if (
+        prefixRef.current &&
+        !prefixRef.current.contains(e.target) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target)
+      ) {
         setPrefixMatches([]);
       }
+
       if (typeFilterRef.current && !typeFilterRef.current.contains(e.target)) {
         console.log('Clicked outside, closing type dropdown');
         setShowTypeDropdown(false);
@@ -636,20 +646,39 @@ export default function CyberDashboard() {
     setSelectedNode(null);
     setPathHighlight([]);
     setPrefixMatches([]);
+    setSearchValue(''); // Clear search value to avoid "IoC Not Found"
     if (isEngineReady) {
-      const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
-      const globalData = JSON.parse(getGlobal());
-      // Assign colors to global nodes
-      globalData.nodes = globalData.nodes.map(node => ({
-        ...node,
-        type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
-        color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
-      }));
-      setGraphData(globalData);
-      setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)).map(t => ({
-        ...t,
-        type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
-      })));
+      const initEngine = module.cwrap('initEngine', null, []);
+      initEngine(); // Clear the WASM engine state
+      // Reload mock data to repopulate the engine
+      fetch('/data/mock_data.json')
+        .then(res => res.json())
+        .then(mockData => {
+          const otxFormat = mockData.map(ioc => ({ indicators: [ioc] }));
+          const setData = module.cwrap('setOTXData', null, ['string']);
+          setData(JSON.stringify({ results: otxFormat }));
+          // Wait briefly for engine to process
+          setTimeout(() => {
+            const getGlobal = module.cwrap('getGlobalGraphJSON', 'string', []);
+            const globalData = JSON.parse(getGlobal());
+            if (globalData && globalData.nodes && globalData.nodes.length > 0) {
+              globalData.nodes = globalData.nodes.map(node => ({
+                ...node,
+                type: node.type.toLowerCase() === 'ip' ? 'IP' : node.type.charAt(0).toUpperCase() + node.type.slice(1).toLowerCase(),
+                color: node.type.toLowerCase() === 'ip' ? '#06b6d4' : node.type.toLowerCase() === 'domain' ? '#8b5cf6' : node.type.toLowerCase() === 'hash' ? '#ec4899' : '#94a3b8',
+              }));
+              setGraphData(globalData);
+              setTopThreats(JSON.parse(module.cwrap('getTopKThreats', 'string', ['number'])(5)).map(t => ({
+                ...t,
+                type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
+              })));
+            }
+          }, 500); // Small delay to ensure engine updates
+        })
+        .catch(err => {
+          console.error("Failed to reload mock data:", err);
+          toast.error("Failed to reload data after cache clear");
+        });
     }
     toast.success('Cache cleared!');
   };
@@ -673,61 +702,199 @@ export default function CyberDashboard() {
     setShowPathModal(false);
   };
 
+  function getSeverityColor(score) {
+    if (score > 70) return [157, 23, 77];   // #9d174d  dark rose
+    if (score > 40) return [236, 72, 153];  // #ec4899  pink
+    return [6, 182, 212];                   // #06b6d4  cyan
+  }
+
+
   const exportReport = async (format) => {
-    if (!isEngineReady) return toast.error("Engine not ready");
-    if (!module) return toast.error("Engine not ready");
+    if (!isEngineReady || !module)
+      return toast.error("Engine not ready");
+
     const report = {
       timestamp: new Date().toLocaleString(),
       searchQuery: searchValue || "Global View",
       foundIoC: ioc,
-      topThreats: topThreats.map(t => ({
-        ...t,
-        type: t.type.toLowerCase() === 'ip' ? 'IP' : t.type.charAt(0).toUpperCase() + t.type.slice(1).toLowerCase()
-      })),
-      graphMode: graphMode,
+      topThreats: topThreats,
+      graphMode,
       totalNodes: graphData?.nodes?.length || 0,
-      path: pathHighlight
+      path: pathHighlight,
     };
 
-    if (format === 'json') {
-      const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
+    if (format === "json") {
+      const blob = new Blob([JSON.stringify(report, null, 2)], {
+        type: "application/json",
+      });
+      const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
       a.download = `cyber-report-${Date.now()}.json`;
       a.click();
-      toast.success('Report exported as JSON');
-    } else if (format === 'pdf') {
-      const graphEl = document.querySelector('svg'); // Target the SVG directly
-      if (!graphEl) return toast.error('Graph not ready');
-      const canvas = await html2canvas(graphEl, { backgroundColor: null, scale: 2 }); // No background override
-      const img = canvas.toDataURL('image/png');
-      const pdf = new jsPDF('l', 'mm', 'a4');
-      const width = pdf.internal.pageSize.getWidth();
+      return toast.success("Report exported as JSON");
+    }
+    else if (format === 'pdf') {
+      try {
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const margin = 15;
+        let cursorY = 20;
 
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(20);
-      pdf.setTextColor(6, 182, 212);
-      pdf.text("Cyber Threat Report", 15, 25);
+        // ===== HEADER =====
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(18);
+        pdf.setTextColor(0, 120, 180); // deep cyan accent
+        pdf.text('Integrated Cyber Threat Analyzer', margin, cursorY);
+        cursorY += 10;
 
-      pdf.setFontSize(12);
-      pdf.setTextColor(150, 150, 150);
-      pdf.text(`Generated: ${report.timestamp}`, 15, 35);
-      pdf.text(`Query: ${report.searchQuery}`, 15, 43);
-      pdf.text(`Total IoCs: ${report.totalNodes}`, 15, 51);
+        pdf.setFontSize(12);
+        pdf.setTextColor(50, 50, 50);
+        pdf.text(`Generated: ${report.timestamp}`, margin, cursorY);
+        cursorY += 6;
 
-      pdf.setTextColor(255, 255, 255);
-      pdf.setFontSize(14);
-      pdf.text("Top 5 Threats", 15, 65);
-      report.topThreats.forEach((t, i) => {
+        pdf.setDrawColor(80, 80, 80);
+        pdf.line(margin, cursorY, pageWidth - margin, cursorY);
+        cursorY += 8;
+
+        // ===== BASIC INFO =====
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(12);
+        pdf.setTextColor(20, 20, 20);
+
+        pdf.text(`Query / Context: ${report.searchQuery}`, margin, cursorY);
+        cursorY += 7;
+
+        pdf.text(`Total IoCs in graph: ${report.totalNodes}`, margin, cursorY);
+        cursorY += 12;
+
+        // ===== TOP THREATS =====
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(14);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('Top Threats Summary', margin, cursorY);
+        cursorY += 10;
+
+        pdf.setFont('helvetica', 'normal');
         pdf.setFontSize(11);
-        pdf.text(`${i + 1}. ${t.ioc} (${t.type}) - ${t.score}/100`, 20, 73 + i * 7);
-      });
+        pdf.setTextColor(20, 20, 20);
 
-      pdf.addImage(img, 'PNG', 15, 100, width - 30, (width - 30) * 0.6);
-      pdf.save(`cyber-report-${Date.now()}.pdf`);
-      toast.success('Report exported as PDF');
+        const listTop = report.topThreats?.slice(0, 10) || [];
+
+        listTop.forEach((t, i) => {
+          const score = t.score ?? t.threat_score ?? t.confidence_level ?? 0;
+
+          const severity = (() => {
+            if (score >= 85) return 'CRITICAL';
+            if (score >= 70) return 'HIGH';
+            if (score >= 50) return 'MEDIUM';
+            return 'LOW';
+          })();
+
+          // === MAIN LINE ===
+          const mainLine =
+            `${i + 1}. ${t.ioc} ` +
+            `(${t.type || 'N/A'}) — Score: ${score} — Severity: ${severity}`;
+
+          const wrappedMain = pdf.splitTextToSize(mainLine, pageWidth - margin * 2);
+          // Apply severity color (score-based)
+          const [r, g, b] = getSeverityColor(score);
+          pdf.setTextColor(r, g, b);
+
+          // Print main summary line
+          pdf.text(wrappedMain, margin, cursorY);
+          cursorY += wrappedMain.length * 6;
+
+          // Reset text color for details
+          pdf.setTextColor(20, 20, 20);
+
+          // === DETAILS BLOCK ===
+          const detailLines = [];
+
+          if (t.threat) detailLines.push(`Threat: ${t.threat}`);
+          if (t.malware) detailLines.push(`Malware Family: ${t.malware}`);
+          if (t.tags?.length) detailLines.push(`Tags: ${t.tags.join(', ')}`);
+          if (t.first_seen) detailLines.push(`First Seen: ${t.first_seen}`);
+          if (t.last_seen) detailLines.push(`Last Seen: ${t.last_seen}`);
+          if (t.relatedIoCs?.length)
+            detailLines.push(`Connections: ${t.relatedIoCs.join(', ')}`);
+
+          if (detailLines.length) {
+            pdf.setFontSize(10);
+            pdf.setTextColor(60, 60, 60);
+            const wrappedDetails = pdf.splitTextToSize(
+              detailLines.join('  |  '),
+              pageWidth - margin * 2 - 10
+            );
+            pdf.text(wrappedDetails, margin + 5, cursorY);
+            cursorY += wrappedDetails.length * 5 + 4;
+
+            pdf.setFontSize(11);
+            pdf.setTextColor(20, 20, 20);
+          }
+
+          // === PAGE BREAK ===
+          if (cursorY > 270) {
+            pdf.addPage();
+            cursorY = 20;
+          }
+        });
+
+        // ===== ANALYSIS SECTION =====
+        if (cursorY > 240) {
+          pdf.addPage();
+          cursorY = 20;
+        }
+
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(13);
+        pdf.setTextColor(0, 0, 0);
+        pdf.text('\n\nAutomated Analysis', margin, cursorY);
+        cursorY += 10;
+
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(11);
+        pdf.setTextColor(40, 40, 40);
+
+        const analysisParagraph =
+          `\n\nThis report was generated on ${report.timestamp}.\n` +
+          `The searched IoC or keyword was '${report.searchQuery}'.\n` +
+          `The system identified ${report.totalNodes} total IoCs in the threat graph.\n` +
+          `Top IoCs are ranked by confidence, severity score, and connections.\n` +
+          `Connections indicate graph-based relationships, including related hashes, IPs, domains, and malware families.\n` +
+          `Use the live visualization inside the app to explore clusters, discover path relationships, and run deep threat correlation.\n`;
+
+        const wrappedAnalysis = pdf.splitTextToSize(
+          analysisParagraph,
+          pageWidth - margin * 2
+        );
+
+        pdf.text(wrappedAnalysis, margin, cursorY);
+        cursorY += wrappedAnalysis.length * 5 + 8;
+
+        // ===== FOOTER =====
+        pdf.setFontSize(9);
+        pdf.setTextColor(90, 90, 90);
+        pdf.text(
+          'Generated by Integrated Cyber Threat Analyzer',
+          margin,
+          pdf.internal.pageSize.getHeight() - 12
+        );
+        pdf.text(
+          `Exported: ${new Date().toLocaleString()}`,
+          pageWidth - margin - 60,
+          pdf.internal.pageSize.getHeight() - 12
+        );
+
+        pdf.save(`integrated-cyber-threat-report-${Date.now()}.pdf`);
+        toast.success('PDF Exported');
+      } catch (err) {
+        console.error('PDF export error', err);
+        toast.error('PDF export failed');
+      }
     }
   };
+
+
 
   if (loading) {
     return (
@@ -742,9 +909,6 @@ export default function CyberDashboard() {
       </div>
     );
   }
-
-  // ... (keep the existing imports and state setup) ...
-
   return (
     <>
       <div className="w-screen min-h-screen bg-gradient-to-b from-[#0e0f11] to-[#18191c] text-gray-200 flex flex-col overflow-x-hidden">
@@ -755,7 +919,7 @@ export default function CyberDashboard() {
           className="border-b border-cyan-900/30 px-6 py-4 backdrop-blur-sm bg-white/5"
         >
           <div className="flex justify-between items-center">
-            <div className="flex items-center gap-8"> {/* Increased gap to shift logo right */}
+            <div className="flex items-center">
               <motion.div whileHover={{ scale: 1.1 }} className="w-16 h-16 rounded-xl overflow-hidden">
                 <img src="/ICTA-logo.png" alt="ICTA Logo" className="w-full h-full object-contain" />
               </motion.div>
@@ -769,7 +933,7 @@ export default function CyberDashboard() {
                 whileHover={{ scale: 1.05 }}
                 onClick={resetToGlobal}
                 className="px-4 py-2 bg-cyan-500/20 rounded-lg border border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/30 whitespace-nowrap"
-                // style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Global View
+              // style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Global View
               >
                 Global View
               </motion.button>
@@ -861,7 +1025,7 @@ export default function CyberDashboard() {
                   onChange={handlePrefixChange}
                   onKeyDown={handlePrefixKeyDown}
                   className="w-80 bg-white/10 text-gray-100 px-4 py-2.5 rounded-lg pr-11 border border-cyan-500/30 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:bg-[#0e0f11]/50 transition-all placeholder-gray-500 text-base bg-cyan-500/20 rounded-lg border text-cyan-400 hover:bg-cyan-500/30"
-                  // style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Prefix Search Bar
+                // style={{ backgroundColor: '#0e1a43ff' }} // Explicit blue for Prefix Search Bar
                 />
 
                 {/* SEARCH ICON */}
@@ -883,6 +1047,7 @@ export default function CyberDashboard() {
                 {/* DROPDOWN */}
                 {prefixMatches.length > 0 && createPortal(
                   <motion.ul
+                    ref={dropdownRef}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
@@ -896,6 +1061,7 @@ export default function CyberDashboard() {
                     {prefixMatches.map((m, i) => (
                       <li
                         key={i}
+                        onMouseDown={(e) => e.preventDefault()}
                         className={`px-4 py-3 cursor-pointer text-sm border-b border-white/5 last:border-0 flex items-center justify-between transition-all ${i === selectedIndex ? 'bg-cyan-500/30 text-blue-300' : 'hover:bg-cyan-500/20'}`}
                         onClick={() => {
                           if (prefixInputRef.current) prefixInputRef.current.value = m;
@@ -999,7 +1165,16 @@ export default function CyberDashboard() {
                   <div className="relative">
                     <svg className="w-28 h-28 transform -rotate-90">
                       <circle cx="56" cy="56" r="50" stroke="#2d2d2f" strokeWidth="8" fill="none" />
-                      <circle cx="56" cy="56" r="50" stroke="#06b6d4" strokeWidth="8" fill="none" strokeDasharray={`${(ioc.score / 100) * 314} 314`} strokeLinecap="round" />
+                      <circle
+                        cx="56"
+                        cy="56"
+                        r="50"
+                        stroke={ioc.score > 70 ? '#9d174d' : ioc.score > 40 ? '#ec4899' : '#06b6d4'}
+                        strokeWidth="8"
+                        fill="none"
+                        strokeDasharray={`${(ioc.score / 100) * 314} 314`}
+                        strokeLinecap="round"
+                      />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
                       <span className="text-2xl font-bold text-white">{ioc.score}/100</span>
@@ -1056,7 +1231,14 @@ export default function CyberDashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {topThreats.length > 0 ? (
                 topThreats.map((t, i) => (
-                  <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} whileHover={{ scale: 1.03 }} className="bg-gradient-to-br from-[#1a1b1e]/80 to-[#141518]/80 p-5 rounded-2xl border border-cyan-500/20 backdrop-blur-sm shadow-lg">
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    whileHover={{ scale: 1.03 }}
+                    className="bg-gradient-to-br from-[#1a1b1e]/80 to-[#141518]/80 p-5 rounded-2xl border border-cyan-500/20 backdrop-blur-sm shadow-lg cursor-pointer"
+                    onClick={() => handleSearch(t.ioc)} // Trigger search on click to show cluster
+                  >
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <h4 className="text-white font-semibold text-lg">{t.ioc}</h4>
@@ -1070,7 +1252,11 @@ export default function CyberDashboard() {
                       </div>
                     </div>
                     <div className="w-full bg-gray-800 rounded-full h-2 mt-3">
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${t.score}%` }} className={`h-full rounded-full ${t.score > 80 ? 'bg-gradient-to-r from-red-500 to-red-600' : t.score > 60 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 'bg-gradient-to-r from-yellow-500 to-yellow-600'}`} />
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${t.score}%` }}
+                        className={`h-full rounded-full ${t.score > 80 ? 'bg-gradient-to-r from-red-500 to-red-600' : t.score > 60 ? 'bg-gradient-to-r from-orange-500 to-orange-600' : 'bg-gradient-to-r from-yellow-500 to-yellow-600'}`}
+                      />
                     </div>
                   </motion.div>
                 ))
