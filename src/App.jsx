@@ -1103,7 +1103,7 @@ export default function CyberDashboard() {
                   className="w-full h-full object-cover"
                 />
               </motion.div>
-              <h3 className="text-white font-bold text-2xl tracking-tight">Byte-Sized Security Squad</h3>
+              <h3 className="text-white font-bold text-2xl tracking-tight">A<sup>3</sup> Security Squad</h3>
             </div>
             <div className="space-y-3 text-sm text-gray-300">
               <div className="flex items-center gap-3 hover:bg-cyan-500/10 p-2 rounded-lg transition-all">
